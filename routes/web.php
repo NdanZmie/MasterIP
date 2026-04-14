@@ -87,10 +87,19 @@ Route::post('/spekpc/store', function (Request $request) {
     $validated['windows'] = $validated['windows'] ?? null;
     $validated['keterangan'] = $validated['keterangan'] ?? null;
 
+
+    $validated['dept'] = $request->dept === 'Other'
+    ? $request->dept_custom
+    : $request->dept;
+    $validated['merk'] = $request->merk === 'Other'
+    ? $request->merk_custom
+    : $request->merk;
+
     Spekpc::create($validated);
 
     return redirect('/spekpc')->with('success', 'Data berhasil ditambahkan');
 });
+
 // 🔥 GET DATA + SEARCH + PAGINATION
 Route::get('/spekpc', function (Request $request) {
 
@@ -123,22 +132,22 @@ if ($sort == 'status') {
         END $order
     ")->orderBy('id', 'asc');
 
-} elseif ($sort == 'ip') {
+    } elseif ($sort == 'ip') {
 
     // 🔥 SORT IP BIAR BENAR (BUKAN STRING)
-    $data = $data->orderByRaw("INET_ATON(ip) $direction");
+        $data = $data->orderByRaw("INET_ATON(ip) $direction");
 
-} elseif ($sort == 'nama' || $sort == 'dept' || $sort == 'keterangan') {
+    } elseif ($sort == 'nama' || $sort == 'dept' || $sort == 'keterangan') {
 
     // 🔥 NORMAL TEXT SORT (ANTI SPASI & CASE)
-    $data = $data->orderByRaw("LOWER(TRIM($sort)) $direction");
+        $data = $data->orderByRaw("LOWER(TRIM($sort)) $direction");
 
-} else {
+    } else {
 
     // 🔥 DEFAULT
-    $data = $data->orderBy($sort, $direction);
+        $data = $data->orderBy($sort, $direction);
 
-}
+    }
 
     $data = $data->paginate(10)->withQueryString();
 
@@ -150,10 +159,24 @@ Route::delete('/spekpc/delete/{id}', function ($id) {
     return redirect('/spekpc')->with('success', 'Data berhasil dihapus');
 });
 
+// UPDATE DATA/EDIT
 Route::put('/spekpc/update/{id}', function (Request $request, $id) {
-    \App\Models\Spekpc::findOrFail($id)->update($request->all());
+    $data = \App\Models\Spekpc::findOrFail($id);
+    $validated = $request->all();
+    if ($request->merk === 'Other') {
+        $validated['merk'] = $request->merk_custom;
+    } else {
+        $validated['merk'] = $request->merk ?? $data->merk;
+    }
+    if ($request->dept === 'Other') {
+        $validated['dept'] = $request->dept_custom;
+    } else {
+        $validated['dept'] = $request->dept ?? $data->dept;
+    }
+    $data->update($validated);
     return redirect('/spekpc')->with('success', 'Data berhasil diupdate');
 });
+
 
 
 // EXPORT KE CSV DAN EXCEL
@@ -244,4 +267,10 @@ Route::get('/spekpc/export/csv', function () {
     };
 
     return response()->stream($callback, 200, $headers);
+});
+
+
+// route CLIP
+Route::get('/clip', function () {
+    return view('pages.clip');
 });

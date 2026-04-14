@@ -20,7 +20,7 @@
 
             <nav class="space-x-4">
                 <a href="/data" class="text-gray-600 hover:text-blue-500">Data</a>
-                <a href="/home" class="text-gray-600 hover:text-blue-500">Home</a>
+                <a href="/clip" class="text-gray-600 hover:text-blue-500">CLIPBOARD</a>
                 <a href="/logout" class="text-gray-600 hover:text-blue-500">Logout</a>
                 <a href="/spekpc" class="text-gray-600 hover:text-blue-500">Spek PC</a>
             </nav>

@@ -36,7 +36,30 @@
 
                         <div>
                             <label class="text-sm font-medium">Dept</label>
-                            <input name="dept" class="input" required>
+
+                            <select name="dept" id="deptSelect" class="input" onchange="toggleDeptInput(this)" required>
+                                <option value="">-- Pilih Dept --</option>
+                                <option value="EDP">EDP</option>
+                                <option value="BIC">BIC</option>
+                                <option value="HRD">HRD</option>
+                                <option value="GA">GA</option>
+                                <option value="FIN">FIN</option>
+                                <option value="DEV">DEV</option>
+                                <option value="LOC">LOC</option>
+                                <option value="LICENSE">LICENSE</option>
+                                <option value="MKT-FRC">MKT-FRC</option>
+                                <option value="PROJ">PROJ</option>
+                                <option value="MTC">MTC</option>
+                                <option value="AREA">AREA</option>
+                                <option value="MD">MD</option>
+                                <option value="DC">DC</option>
+                                <option value="HRD-TC">HRD-TC</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <input type="text" name="dept_custom" id="deptCustom"
+                                class="input mt-2 hidden"
+                                placeholder="Isi dept lainnya...">
                         </div>
 
                         {{-- BARU --}}
@@ -52,7 +75,20 @@
 
                         <div>
                             <label class="text-sm font-medium">Merk</label>
-                            <input name="merk" class="input">
+
+                            <select name="merk" id="merkSelect" class="input" onchange="toggleMerkInput(this)">
+                                <option value="">-- Pilih Merk --</option>
+                                <option value="ZYREX">ZYREX</option>
+                                <option value="WEARNES">WEARNES</option>
+                                <option value="GEAR">GEAR</option>
+                                <option value="ACER">ACER</option>
+                                <option value="HP">HP</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <input type="text" name="merk_custom" id="merkCustom"
+                                placeholder="Isi merk lainnya..."
+                                class="input mt-2 hidden">
                         </div>
 
                         {{-- SPEK --}}
@@ -172,5 +208,31 @@ function updateCharCount() {
     const counter = document.getElementById('charCount');
 
     counter.innerText = input.value.length;
+}
+</script>
+<script>
+function toggleMerkInput(select) {
+    const custom = document.getElementById('merkCustom');
+
+    if (select.value === 'Other') {
+        custom.classList.remove('hidden');
+    } else {
+        custom.classList.add('hidden');
+        custom.value = '';
+    }
+}
+</script>
+<script>
+function toggleDeptInput(select) {
+    const custom = document.getElementById('deptCustom');
+
+    if (select.value === 'Other') {
+        custom.classList.remove('hidden');
+        custom.required = true;
+    } else {
+        custom.classList.add('hidden');
+        custom.value = '';
+        custom.required = false;
+    }
 }
 </script>

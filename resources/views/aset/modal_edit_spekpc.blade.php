@@ -36,7 +36,30 @@
 
                         <div>
                             <label class="text-sm font-medium">Dept</label>
-                            <input id="edit_dept" name="dept" class="input" required>
+
+                            <select id="edit_dept_select" name="dept" class="input" onchange="toggleEditDeptInput(this)" required>
+                                <option value="">-- Pilih Dept --</option>
+                                <option value="EDP">EDP</option>
+                                <option value="BIC">BIC</option>
+                                <option value="HRD">HRD</option>
+                                <option value="GA">GA</option>
+                                <option value="FIN">FIN</option>
+                                <option value="DEV">DEV</option>
+                                <option value="LOC">LOC</option>
+                                <option value="LICENSE">LICENSE</option>
+                                <option value="MKT-FRC">MKT-FRC</option>
+                                <option value="PROJ">PROJ</option>
+                                <option value="MTC">MTC</option>
+                                <option value="AREA">AREA</option>
+                                <option value="MD">MD</option>
+                                <option value="DC">DC</option>
+                                <option value="HRD-TC">HRD-TC</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <input type="text" id="edit_dept_custom" name="dept_custom"
+                                class="input mt-2 hidden"
+                                placeholder="Isi dept lainnya...">
                         </div>
 
                         <div>
@@ -51,7 +74,20 @@
 
                         <div>
                             <label class="text-sm font-medium">Merk</label>
-                            <input id="edit_merk" name="merk" class="input">
+
+                            <select id="edit_merk_select" name="merk" class="input" onchange="toggleEditMerkInput(this)">
+                                <option value="">-- Pilih Merk --</option>
+                                <option value="ZYREX">ZYREX</option>
+                                <option value="WEARNES">WEARNES</option>
+                                <option value="GEAR">GEAR</option>
+                                <option value="ACER">ACER</option>
+                                <option value="HP">HP</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <input type="text" id="edit_merk_custom" name="merk_custom"
+                                class="input mt-2 hidden"
+                                placeholder="Isi merk lainnya...">
                         </div>
 
                         <div>
@@ -135,6 +171,7 @@
 <script>
 // OPEN MODAL
 function openEditModal(data){
+    
     const modal = document.getElementById('editModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -190,6 +227,34 @@ function updateEditCharCount() {
         counter.style.color = 'red';
     } else {
         counter.style.color = '';
+    }
+}
+</script>
+<script>
+function toggleEditMerkInput(select) {
+    const custom = document.getElementById('edit_merk_custom');
+
+    if (select.value === 'Other') {
+        custom.classList.remove('hidden');
+        custom.required = true;
+    } else {
+        custom.classList.add('hidden');
+        custom.value = '';
+        custom.required = false;
+    }
+}
+</script>
+<script>
+function toggleEditDeptInput(select) {
+    const custom = document.getElementById('edit_dept_custom');
+
+    if (select.value === 'Other') {
+        custom.classList.remove('hidden');
+        custom.required = true;
+    } else {
+        custom.classList.add('hidden');
+        custom.value = '';
+        custom.required = false;
     }
 }
 </script>
