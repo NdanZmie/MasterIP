@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Dashboard' }}</title>
@@ -9,12 +10,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="min-h-screen bg-cover bg-center font-[Inter]"
+      style="background-image: url('{{ asset('aset/bgwhite.jpg') }}');">
 
     {{-- 🔷 HEADER / NAVBAR --}}
-    <header class="bg-white shadow">
+<header id="navbar"
+    class="fixed top-0 left-0 w-full bg-white/50 backdrop-blur-md shadow z-50 transition-transform duration-300">   
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-gray-800">
+            <h1 class="text-xl font-semibold tracking-wide text-gray-800">
                 MasterIP 
             </h1>
 
@@ -28,12 +31,12 @@
     </header>
 
     {{-- 🔶 CONTENT --}}
-    <main class="max-w-7xl mx-auto p-6">
+    <main class="max-w-7xl mx-auto p-6 pt-24">
         @yield('content')
     </main>
 
     {{-- 🔻 FOOTER --}}
-    <footer class="bg-white border-t mt-10">
+    <footer class="bg-white/50 border-t mt-10">
         <div class="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500">
             © {{ date('Y') }} MasterIP . All rights reserved.
         </div>
@@ -44,3 +47,34 @@
 
 </body>
 </html>
+
+<script>
+let lastScroll = 0;
+const navbar = document.getElementById('navbar');
+
+window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+
+    if (currentScroll <= 0) {
+        navbar.style.transform = 'translateY(0)';
+        return;
+    }
+
+    if (currentScroll > lastScroll) {
+        // scroll ke bawah → hide
+        navbar.style.transform = 'translateY(-100%)';
+    } else {
+        // scroll ke atas → muncul
+        navbar.style.transform = 'translateY(0)';
+    }
+
+    lastScroll = currentScroll;
+});
+</script>
+<script>
+document.addEventListener('mousemove', function(e){
+    if (e.clientY < 50) {
+        navbar.style.transform = 'translateY(0)';
+    }
+});
+</script>

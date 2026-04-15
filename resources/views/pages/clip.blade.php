@@ -57,9 +57,7 @@
 function copyText(index) {
     const text = document.getElementById('cmd-' + index).value;
 
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Copied!');
-    });
+    copyToClipboard(text);
 }
 
 function copyAll() {
@@ -69,9 +67,22 @@ function copyAll() {
         all += document.getElementById('cmd-{{ $index }}').value + "\n";
     @endforeach
 
-    navigator.clipboard.writeText(all).then(() => {
-        alert('Semua command berhasil dicopy!');
-    });
+    copyToClipboard(all);
+}
+
+function copyToClipboard(text) {
+    // fallback universal
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    alert('Copied!');
 }
 </script>
 
