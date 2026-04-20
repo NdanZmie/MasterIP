@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasterIP — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #eef3fb;
+            --bg2: #e2ebf8;
+            --surface: rgba(255,255,255,0.88);
+            --surface2: #f4f8ff;
+            --border: rgba(37,99,235,0.13);
+            --border-hover: rgba(37,99,235,0.38);
+            --accent: #2563eb;
+            --accent2: #1d4ed8;
+            --accent-light: #dbeafe;
+            --accent-glow: rgba(37,99,235,0.18);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --danger: #dc2626;
+            --danger-bg: rgba(220,38,38,0.07);
+            --success: #16a34a;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── ANIMATED BACKGROUND ── */
+        #canvas-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* ── ANIMATED BLOBS ── */
+        .blob-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.45;
+            animation: floatBlob linear infinite;
+        }
+        .blob-1 {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle, #bfdbfe, #93c5fd);
+            top: -120px; left: -100px;
+            animation-duration: 18s;
+            animation-delay: 0s;
+        }
+        .blob-2 {
+            width: 420px; height: 420px;
+            background: radial-gradient(circle, #c7d2fe, #a5b4fc);
+            bottom: -80px; right: -80px;
+            animation-duration: 22s;
+            animation-delay: -6s;
+        }
+        .blob-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #bae6fd, #7dd3fc);
+            top: 40%; left: 60%;
+            animation-duration: 15s;
+            animation-delay: -10s;
+        }
+        .blob-4 {
+            width: 260px; height: 260px;
+            background: radial-gradient(circle, #ddd6fe, #c4b5fd);
+            top: 20%; right: 20%;
+            animation-duration: 19s;
+            animation-delay: -3s;
+        }
+        @keyframes floatBlob {
+            0%   { transform: translate(0px, 0px) scale(1); }
+            25%  { transform: translate(30px, -25px) scale(1.06); }
+            50%  { transform: translate(-20px, 30px) scale(0.95); }
+            75%  { transform: translate(25px, 15px) scale(1.04); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        /* ── DOT GRID ── */
+        .dot-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(37,99,235,0.18) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* ── FLOATING PARTICLES (CSS) ── */
+        .particle-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(37,99,235,0.22);
+            animation: floatParticle ease-in-out infinite;
+        }
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+            50%       { transform: translateY(-28px) scale(1.2); opacity: 1; }
+        }
+
+        /* ── MAIN WRAPPER ── */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            padding: 24px;
+            animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+
+        /* ── FLOATING BADGE ABOVE CARD ── */
+        .top-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            animation: fadeUp 0.9s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid rgba(37,99,235,0.18);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.8px;
+            box-shadow: 0 2px 12px rgba(37,99,235,0.1);
+        }
+        .badge-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 7px var(--success);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 44px 40px 36px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            transition: border-color 0.4s, box-shadow 0.4s;
+            box-shadow:
+                0 4px 0 rgba(37,99,235,0.08),
+                0 16px 64px rgba(37,99,235,0.12),
+                0 0 0 1px rgba(255,255,255,0.8) inset,
+                0 1px 0 rgba(255,255,255,0.9) inset;
+            transform-style: preserve-3d;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb 0%, #60a5fa 40%, #818cf8 70%, #2563eb 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow:
+                0 4px 0 rgba(37,99,235,0.12),
+                0 24px 80px rgba(37,99,235,0.18),
+                0 0 0 1px rgba(255,255,255,0.9) inset;
+        }
+
+        /* ── ANIMATED CORNER ACCENTS ── */
+        .corner {
+            position: absolute;
+            width: 20px; height: 20px;
+            border-color: rgba(37,99,235,0.25);
+            border-style: solid;
+            opacity: 0;
+            animation: cornerIn 0.6s 0.4s forwards;
+        }
+        .corner-tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+        .corner-tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+        .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+        .corner-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+        @keyframes cornerIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ── BRAND ── */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 30px;
+        }
+        .brand-icon {
+            width: 46px; height: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+            animation: iconPop 0.7s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        @keyframes iconPop {
+            from { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+            to   { transform: scale(1)   rotate(0deg);   opacity: 1; }
+        }
+        .brand-icon svg { width: 22px; height: 22px; stroke: white; }
+        .brand-icon::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+        .brand-name {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .brand-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--accent);
+            background: var(--accent-light);
+            border: 1px solid rgba(37,99,235,0.2);
+            border-radius: 5px;
+            padding: 2px 7px;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* ── HEADING ── */
+        .login-sub {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 28px;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── FORM GROUP ── */
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+            animation: slideIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: color 0.2s;
+        }
+        .form-group:focus-within .form-label { color: var(--accent); }
+
+        .input-wrap { position: relative; }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px; height: 15px;
+            stroke: #94a3b8;
+            transition: stroke 0.2s;
+            pointer-events: none;
+        }
+        .form-group:focus-within .input-icon { stroke: var(--accent); }
+
+        .form-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1.5px solid rgba(37,99,235,0.12);
+            border-radius: 12px;
+            padding: 13px 14px 13px 42px;
+            font-size: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            caret-color: var(--accent);
+        }
+        .form-input::placeholder { color: #b0bed0; }
+        .form-input:focus {
+            border-color: rgba(37,99,235,0.45);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.09);
+            background: #fff;
+        }
+
+        /* Eye toggle */
+        .eye-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #94a3b8;
+            transition: color 0.2s;
+            display: flex; align-items: center;
+        }
+        .eye-toggle:hover { color: var(--accent); }
+        .eye-toggle svg { width: 16px; height: 16px; stroke: currentColor; }
+
+        /* Caps lock */
+        .capslock-warn {
+            font-size: 11px;
+            color: #d97706;
+            margin-top: 5px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .capslock-warn.show { display: flex; }
+
+        /* ── ERROR ALERT ── */
+        .error-alert {
+            background: var(--danger-bg);
+            border: 1px solid rgba(220,38,38,0.18);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.45s cubic-bezier(0.36,0.07,0.19,0.97);
+        }
+        .error-alert svg { width: 15px; height: 15px; stroke: var(--danger); flex-shrink: 0; }
+        .error-alert span { font-size: 13px; color: var(--danger); line-height: 1.4; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-7px); }
+            40% { transform: translateX(7px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        /* ── SUBMIT BUTTON ── */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.3s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 20px rgba(37,99,235,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+            animation: slideIn 0.5s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: btnShine 2.5s ease-in-out infinite;
+        }
+        @keyframes btnShine {
+            0%   { background-position: -200% 0; }
+            60%  { background-position: 200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(37,99,235,0.38);
+        }
+        .btn-login:active:not(:disabled) { transform: translateY(0); }
+        .btn-login:disabled { opacity: 0.65; cursor: not-allowed; }
+        .btn-login .btn-content { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-login .spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .btn-login.loading .btn-text { display: none; }
+        .btn-login.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── DIVIDER ── */
+        .divider-wrap {
+            display: flex; align-items: center; gap: 12px;
+            margin: 20px 0 16px;
+        }
+        .divider-line { flex: 1; height: 1px; background: rgba(37,99,235,0.1); }
+        .divider-text {
+            font-size: 11px; color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ── REGISTER BUTTON ── */
+        .btn-register {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 13px;
+            background: white;
+            border: 1.5px solid rgba(37,99,235,0.18);
+            border-radius: 12px;
+            font-size: 14px; font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--accent);
+            cursor: pointer; text-decoration: none;
+            position: relative; overflow: hidden;
+            transition: border-color 0.25s, background 0.25s, transform 0.15s, box-shadow 0.2s;
+            animation: slideIn 0.5s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.07);
+        }
+        .btn-register:hover {
+            border-color: rgba(37,99,235,0.4);
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37,99,235,0.14);
+        }
+        .btn-register:active { transform: translateY(0); }
+
+        /* ── PAGE TRANSITION OVERLAY ── */
+        #page-transition {
+            position: fixed; inset: 0; z-index: 9999;
+            pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .transition-circle {
+            width: 0; height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, #dbeafe 0%, #eff6ff 100%);
+            transition: width 0.65s cubic-bezier(0.87,0,0.13,1), height 0.65s cubic-bezier(0.87,0,0.13,1);
+            position: absolute;
+        }
+        .transition-circle.expand { width: 200vmax; height: 200vmax; }
+        .transition-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 3px;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s 0.25s;
+            text-transform: uppercase;
+        }
+        .transition-label.show { opacity: 1; }
+
+        /* ── RIPPLE ── */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0);
+            animation: ripple 0.55s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        /* ── NIK DISPLAY ── */
+        .nik-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(37,99,235,0.45);
+            margin-top: 5px;
+            height: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── CARD FOOTER ── */
+        .card-footer {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(37,99,235,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sys-info {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .status-dot {
+            display: flex; align-items: center; gap: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--success);
+        }
+        .status-dot::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        /* ── FLOATING SIDE DECORATIONS ── */
+        .deco-card {
+            position: fixed;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(37,99,235,0.12);
+            border-radius: 14px;
+            padding: 12px 18px;
+            backdrop-filter: blur(12px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 4px 20px rgba(37,99,235,0.1);
+            animation: floatCard ease-in-out infinite;
+        }
+        .deco-card .dc-label { font-size: 9px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 4px; }
+        .deco-card .dc-val { color: #2563eb; font-size: 11px; font-weight: 500; }
+        .deco-1 { left: 4%; top: 22%; animation-duration: 6s; animation-delay: 0s; }
+        .deco-2 { right: 4%; top: 30%; animation-duration: 7s; animation-delay: -2s; }
+        .deco-3 { right: 6%; bottom: 25%; animation-duration: 8s; animation-delay: -4s; }
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+
+{{-- MODAL PASSWORD REGISTER --}}
+<div id="regPasswordModal" style="
+    display:none; position:fixed; inset:0; z-index:99999;
+    background:rgba(15,23,42,0.3); backdrop-filter:blur(8px);
+    align-items:center; justify-content:center;">
+
+    <div style="
+        background:white; border:1.5px solid rgba(37,99,235,0.18);
+        border-radius:20px; padding:36px 32px; width:100%; max-width:370px;
+        position:relative; box-shadow:0 24px 64px rgba(37,99,235,0.18);
+        animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1) forwards;">
+
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,#2563eb,#60a5fa,#818cf8);
+            border-radius:20px 20px 0 0;"></div>
+
+        <div style="margin-bottom:6px;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;
+                color:rgba(37,99,235,0.6);letter-spacing:2px;">AKSES TERBATAS</span>
+        </div>
+        <div style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;">Konfirmasi Password</div>
+        <div style="font-size:12.5px;color:#64748b;margin-bottom:24px;line-height:1.6;">
+            Masukkan password EDP untuk mengakses halaman registrasi.
+        </div>
+
+        <div style="position:relative;margin-bottom:8px;">
+            <svg style="position:absolute;left:13px;top:50%;transform:translateY(-50%);
+                width:15px;height:15px;stroke:#94a3b8;pointer-events:none;"
+                viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="regPassInput" placeholder="••••••••"
+                style="width:100%;background:#f4f8ff;border:1.5px solid rgba(37,99,235,0.14);
+                border-radius:11px;padding:12px 14px 12px 40px;font-size:14px;
+                font-family:'Space Grotesk',sans-serif;color:#0f172a;outline:none;
+                caret-color:#2563eb;transition:border-color 0.2s,box-shadow 0.2s;"
+                onkeydown="if(event.key==='Enter') confirmRegPass()"
+                onfocus="this.style.borderColor='rgba(37,99,235,0.45)';this.style.boxShadow='0 0 0 4px rgba(37,99,235,0.09)'"
+                onblur="this.style.borderColor='rgba(37,99,235,0.14)';this.style.boxShadow='none'">
+        </div>
+
+        <div id="regPassError" style="font-size:11.5px;color:#dc2626;
+            min-height:18px;margin-bottom:16px;display:none;
+            font-family:'JetBrains Mono',monospace;">
+            ✕ Password salah. Coba lagi.
+        </div>
+
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeRegModal()" style="
+                flex:1;padding:11px;background:white;
+                border:1.5px solid rgba(37,99,235,0.14);border-radius:11px;
+                font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;
+                color:#64748b;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.background='#f4f8ff';this.style.color='#0f172a'"
+                onmouseout="this.style.background='white';this.style.color='#64748b'">
+                Batal
+            </button>
+            <button onclick="confirmRegPass()" style="
+                flex:2;padding:11px;
+                background:linear-gradient(135deg,#1d4ed8,#3b82f6);
+                border:none;border-radius:11px;
+                font-size:13px;font-weight:700;font-family:'Space Grotesk',sans-serif;
+                color:white;cursor:pointer;
+                box-shadow:0 4px 16px rgba(37,99,235,0.25);
+                transition:transform 0.15s,box-shadow 0.2s;"
+                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 24px rgba(37,99,235,0.35)'"
+                onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.25)'">
+                Konfirmasi →
+            </button>
+        </div>
+    </div>
+</div>
+
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<div class="blob-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+</div>
+
+<div class="dot-grid"></div>
+
+{{-- CSS Particles --}}
+<div class="particle-wrap" id="particle-wrap"></div>
+
+{{-- FLOATING DECO CARDS --}}
+<div class="deco-card deco-1">
+    <div class="dc-label">DEVICES ONLINE</div>
+    <div class="dc-val">● 142 Active</div>
+</div>
+<div class="deco-card deco-2">
+    <div class="dc-label">NETWORK STATUS</div>
+    <div class="dc-val">▲ 98.7% Uptime</div>
+</div>
+<div class="deco-card deco-3">
+    <div class="dc-label">LAST SYNC</div>
+    <div class="dc-val">↻ Just now</div>
+</div>
+
+{{-- PAGE TRANSITION OVERLAY --}}
+<div id="page-transition">
+    <div class="transition-circle" id="tc"></div>
+    <span class="transition-label" id="tl">MEMUAT REGISTRASI...</span>
+</div>
+
+<div class="login-wrapper">
+
+    {{-- FLOATING BADGE --}}
+    <div class="top-badge">
+        <div class="badge-pill">
+            <span class="badge-dot"></span>
+            SISTEM AKTIF — EDP MONITORING
+        </div>
+    </div>
+
+    <div class="card" id="login-card">
+
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        {{-- BRAND --}}
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 21h8M12 17v4"/>
+                    <path d="M6 8h.01M6 11h.01"/>
+                    <rect x="10" y="7" width="8" height="6" rx="1"/>
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">MasterIP</div>
+                <div class="brand-badge">By ZMIE_V1.0 BETA</div>
+            </div>
+        </div>
+
+        <div class="login-sub">WEB MONITORING EDP</div>
+
+        {{-- ERROR --}}
+        @if(session('error'))
+        <div class="error-alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="error-alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ $errors->first() }}</span>
+        </div>
+        @endif
+
+        {{-- FORM --}}
+        <form method="POST" action="{{ route('login.post') }}" id="loginForm">
+            @csrf
+
+            {{-- NIK --}}
+            <div class="form-group">
+                <label class="form-label">NIK Karyawan</label>
+                <div class="input-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                        <line x1="2" y1="10" x2="22" y2="10"/>
+                    </svg>
+                    <input
+                        type="text"
+                        name="NIK"
+                        id="nik-input"
+                        class="form-input"
+                        placeholder="Masukkan NIK Anda"
+                        value="{{ old('NIK') }}"
+                        autocomplete="off"
+                        spellcheck="false"
+                        autofocus
+                    >
+                </div>
+                <div class="nik-display" id="nik-display"></div>
+            </div>
+
+            {{-- PASSWORD --}}
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="input-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input
+                        type="password"
+                        name="Password"
+                        id="pass-input"
+                        class="form-input"
+                        style="padding-right: 44px;"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="eye-toggle" id="eye-toggle" tabindex="-1">
+                        <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="capslock-warn" id="capslock-warn">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    CAPS LOCK aktif
+                </div>
+            </div>
+
+            {{-- SUBMIT --}}
+            <button type="submit" class="btn-login" id="login-btn">
+                <div class="btn-content">
+                    <div class="spinner"></div>
+                    <span class="btn-text">L O G I N</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </button>
+
+            <div class="divider-wrap">
+                <span class="divider-line"></span>
+                <span class="divider-text">atau</span>
+                <span class="divider-line"></span>
+            </div>
+
+            <a href="{{ route('register') }}" class="btn-register" id="register-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                Buat Akun Baru
+            </a>
+        </form>
+
+        <div class="card-footer">
+            <span class="sys-info">SYS/{{ date('Y') }}/EDP</span>
+            <span class="status-dot">ONLINE</span>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ── CANVAS PARTICLE NETWORK ── */
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const PARTICLE_COUNT = 50;
+const MAX_DIST = 130;
+const particles = [];
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.38,
+        vy: (Math.random() - 0.5) * 0.38,
+        r: Math.random() * 2.2 + 0.8,
+        opacity: Math.random() * 0.4 + 0.1,
+    });
+}
+
+let mouse = { x: -999, y: -999 };
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(37,99,235,${p.opacity})`;
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx = p.x - q.x, dy = p.y - q.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < MAX_DIST) {
+                const alpha = (1 - dist / MAX_DIST) * 0.14;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(q.x, q.y);
+                ctx.strokeStyle = `rgba(37,99,235,${alpha})`;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+            }
+        }
+
+        const mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+        const mdist = Math.sqrt(mdx*mdx + mdy*mdy);
+        if (mdist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            const ma = (1 - mdist / 110) * 0.28;
+            ctx.strokeStyle = `rgba(37,99,235,${ma})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+        }
+    }
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ── CSS PARTICLES ── */
+const pw = document.getElementById('particle-wrap');
+for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const size = Math.random() * 6 + 3;
+    el.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        animation-duration:${4 + Math.random()*5}s;
+        animation-delay:${-Math.random()*6}s;
+        opacity:${0.2 + Math.random()*0.3};
+    `;
+    pw.appendChild(el);
+}
+
+/* ── NIK DISPLAY ── */
+const nikInput = document.getElementById('nik-input');
+const nikDisplay = document.getElementById('nik-display');
+nikInput.addEventListener('input', () => {
+    const val = nikInput.value;
+    nikDisplay.textContent = val.length > 0 ? '> ' + val.split('').join(' ') + ' _' : '';
+});
+
+/* ── SHOW/HIDE PASSWORD ── */
+const passInput = document.getElementById('pass-input');
+const eyeToggle = document.getElementById('eye-toggle');
+const eyeIcon = document.getElementById('eye-icon');
+const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+let passVisible = false;
+eyeToggle.addEventListener('click', () => {
+    passVisible = !passVisible;
+    passInput.type = passVisible ? 'text' : 'password';
+    eyeIcon.innerHTML = passVisible ? eyeClosed : eyeOpen;
+});
+
+/* ── CAPS LOCK ── */
+const capswarn = document.getElementById('capslock-warn');
+passInput.addEventListener('keyup', e => {
+    if (e.getModifierState) capswarn.classList.toggle('show', e.getModifierState('CapsLock'));
+});
+
+/* ── FORM SUBMIT LOADING ── */
+const form = document.getElementById('loginForm');
+const btn = document.getElementById('login-btn');
+form.addEventListener('submit', () => {
+    if (nikInput.value.trim() && passInput.value.trim()) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    }
+});
+
+/* ── RIPPLE ── */
+btn.addEventListener('click', function(e) {
+    const rect = btn.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+});
+
+/* ── CARD 3D TILT ── */
+const card = document.getElementById('login-card');
+card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    card.style.transform = `perspective(1000px) rotateY(${dx * 3.5}deg) rotateX(${-dy * 3.5}deg)`;
+});
+card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
+    card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+    setTimeout(() => { card.style.transition = ''; }, 600);
+});
+
+/* ── REGISTER TRANSITION ── */
+const registerBtn = document.getElementById('register-btn');
+const tc = document.getElementById('tc');
+const tl = document.getElementById('tl');
+const regModal = document.getElementById('regPasswordModal');
+
+registerBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    regModal.style.display = 'flex';
+    setTimeout(() => document.getElementById('regPassInput').focus(), 100);
+});
+
+function closeRegModal() {
+    regModal.style.display = 'none';
+    document.getElementById('regPassInput').value = '';
+    document.getElementById('regPassError').style.display = 'none';
+}
+
+function confirmRegPass() {
+    const input = document.getElementById('regPassInput').value;
+    const err   = document.getElementById('regPassError');
+    if (input !== '@nt@riks@') {
+        err.style.display = 'block';
+        document.getElementById('regPassInput').style.borderColor = 'rgba(220,38,38,0.5)';
+        document.getElementById('regPassInput').style.boxShadow   = '0 0 0 4px rgba(220,38,38,0.08)';
+        document.getElementById('regPassInput').value = '';
+        document.getElementById('regPassInput').focus();
+        return;
+    }
+    regModal.style.display = 'none';
+    const dest = registerBtn.href;
+    tc.style.transition = 'width 0.65s cubic-bezier(0.87,0,0.13,1), height 0.65s cubic-bezier(0.87,0,0.13,1)';
+    tc.classList.add('expand');
+    tl.classList.add('show');
+    setTimeout(() => { window.location.href = dest; }, 750);
+}
+
+regModal.addEventListener('click', function(e) {
+    if (e.target === regModal) closeRegModal();
+});
+</script>
+
+</body>
+</html>

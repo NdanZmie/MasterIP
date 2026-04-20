@@ -471,41 +471,52 @@
 
                                 <div id="detail-{{ $item->id }}" class="detail-panel">
                                     <div class="detail-grid">
-                                        <div class="detail-item">
-                                            <span class="detail-label">DAT</span>
-                                            <span class="detail-value mono">{{ $item->dat ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Serial Number</span>
-                                            <span class="detail-value mono">{{ $item->sn ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Merk</span>
-                                            <span class="detail-value">{{ $item->merk ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Processor</span>
-                                            <span class="detail-value" style="font-size:0.72rem;">{{ $item->processor ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">RAM</span>
-                                            <span class="detail-value">{{ $item->ram ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Storage</span>
-                                            <span class="detail-value">{{ $item->storage ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Windows</span>
-                                            <span class="detail-value">{{ $item->windows ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Lisensi Windows</span>
-                                            <span class="detail-value mono" style="font-size:0.7rem;">{{ $item->lisensi_windows ?? '—' }}</span>
-                                        </div>
-                                        <div class="detail-item" style="grid-column:1/-1;">
-                                            <span class="detail-label">Lisensi Office</span>
-                                            <span class="detail-value mono" style="font-size:0.7rem;">{{ $item->lisensi_office ?? '—' }}</span>
+                                            {{-- ← BARU: Computer Name --}}
+                                            <div class="detail-item">
+                                                <span class="detail-label">Computer Name</span>
+                                                <span class="detail-value mono">{{ $item->compname ?? '—' }}</span>
+                                            </div>
+                                            {{-- ← BARU: NIK --}}
+                                            <div class="detail-item">
+                                                <span class="detail-label">NIK</span>
+                                                <span class="detail-value mono">{{ $item->nik ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">DAT</span>
+                                                <span class="detail-value mono">{{ $item->dat ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Serial Number</span>
+                                                <span class="detail-value mono">{{ $item->sn ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Merk</span>
+                                                <span class="detail-value">{{ $item->merk ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Processor</span>
+                                                <span class="detail-value" style="font-size:0.72rem;">{{ $item->processor ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">RAM</span>
+                                                <span class="detail-value">{{ $item->ram ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Storage</span>
+                                                <span class="detail-value">{{ $item->storage ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Windows</span>
+                                                <span class="detail-value">{{ $item->windows ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Lisensi Windows</span>
+                                                <span class="detail-value mono" style="font-size:0.7rem;">{{ $item->lisensi_windows ?? '—' }}</span>
+                                            </div>
+                                            <div class="detail-item" style="grid-column:1/-1;">
+                                                <span class="detail-label">Lisensi Office</span>
+                                                <span class="detail-value mono" style="font-size:0.7rem;">{{ $item->lisensi_office ?? '—' }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -679,47 +690,80 @@ function openEditModal(data) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.getElementById('editForm').action = '/spekpc/update/' + data.id;
-
-    for (const key in data) {
+ 
+    // Isi semua field teks/input biasa
+    const fields = [
+        'ip','compname','nama','nik',  // ← compname & nik BARU
+        'dat','sn','lisensi_windows','lisensi_office','keterangan'
+    ];
+    fields.forEach(key => {
         const el = document.getElementById('edit_' + key);
         if (el) el.value = data[key] ?? '';
-    }
-
+    });
+ 
+    // Update char counter keterangan
+    updateEditCharCount();
+ 
     // DEPT
     const deptSelect = document.getElementById('edit_dept_select');
     const deptCustom = document.getElementById('edit_dept_custom');
     const deptOptions = ["EDP","BIC","HRD","GA","FIN","DEV","LOC","LICENSE","MKT-FRC","PROJ","MTC","AREA","MD","DC","HRD-TC"];
-    if (deptOptions.includes(data.dept)) { deptSelect.value = data.dept; deptCustom.classList.add('hidden'); deptCustom.value = ''; }
-    else { deptSelect.value = 'Other'; deptCustom.classList.remove('hidden'); deptCustom.value = data.dept || ''; }
-
+    if (deptOptions.includes(data.dept)) {
+        deptSelect.value = data.dept;
+        deptCustom.classList.add('hidden'); deptCustom.value = '';
+    } else {
+        deptSelect.value = 'Other';
+        deptCustom.classList.remove('hidden'); deptCustom.value = data.dept || '';
+    }
+ 
     // MERK
     const merkSelect = document.getElementById('edit_merk_select');
     const merkCustom = document.getElementById('edit_merk_custom');
     const merkOptions = ["ZYREX","WEARNES","GEAR","ACER","HP"];
-    if (merkOptions.includes(data.merk)) { merkSelect.value = data.merk; merkCustom.classList.add('hidden'); merkCustom.value = ''; }
-    else { merkSelect.value = 'Other'; merkCustom.classList.remove('hidden'); merkCustom.value = data.merk || ''; }
-
+    if (merkOptions.includes(data.merk)) {
+        merkSelect.value = data.merk;
+        merkCustom.classList.add('hidden'); merkCustom.value = '';
+    } else {
+        merkSelect.value = 'Other';
+        merkCustom.classList.remove('hidden'); merkCustom.value = data.merk || '';
+    }
+ 
     // RAM
     const ramSelect = document.getElementById('edit_ram_select');
     const ramCustom = document.getElementById('edit_ram_custom');
     const ramOptions = ["2 GB","4 GB","6 GB","8 GB","12 GB","16 GB"];
-    if (ramOptions.includes(data.ram)) { ramSelect.value = data.ram; ramCustom.classList.add('hidden'); ramCustom.value = ''; }
-    else { ramSelect.value = 'Other'; ramCustom.classList.remove('hidden'); ramCustom.value = data.ram || ''; }
-
+    if (ramOptions.includes(data.ram)) {
+        ramSelect.value = data.ram;
+        ramCustom.classList.add('hidden'); ramCustom.value = '';
+    } else {
+        ramSelect.value = 'Other';
+        ramCustom.classList.remove('hidden'); ramCustom.value = data.ram || '';
+    }
+ 
     // STORAGE
     const storageSelect = document.getElementById('edit_storage_select');
     const storageCustom = document.getElementById('edit_storage_custom');
     const storageOptions = ["HDD 500 GB","HDD 1 TB","SSD Sata 500GB","SSD Sata 1 TB","NVME 500GB","NVME 1 TB"];
-    if (storageOptions.includes(data.storage)) { storageSelect.value = data.storage; storageCustom.classList.add('hidden'); storageCustom.value = ''; }
-    else { storageSelect.value = 'Other'; storageCustom.classList.remove('hidden'); storageCustom.value = data.storage || ''; }
-
+    if (storageOptions.includes(data.storage)) {
+        storageSelect.value = data.storage;
+        storageCustom.classList.add('hidden'); storageCustom.value = '';
+    } else {
+        storageSelect.value = 'Other';
+        storageCustom.classList.remove('hidden'); storageCustom.value = data.storage || '';
+    }
+ 
     // WINDOWS
     const winSelect = document.getElementById('edit_windows_select');
     const winCustom = document.getElementById('edit_windows_custom');
     const winOptions = ["Windows 7 32 Bit","Windows 7 64 Bit","Windows 10 32 Bit","Windows 10 64 Bit","Windows 11 64 Bit"];
-    if (winOptions.includes(data.windows)) { winSelect.value = data.windows; winCustom.classList.add('hidden'); winCustom.value = ''; }
-    else { winSelect.value = 'Other'; winCustom.classList.remove('hidden'); winCustom.value = data.windows || ''; }
-
+    if (winOptions.includes(data.windows)) {
+        winSelect.value = data.windows;
+        winCustom.classList.add('hidden'); winCustom.value = '';
+    } else {
+        winSelect.value = 'Other';
+        winCustom.classList.remove('hidden'); winCustom.value = data.windows || '';
+    }
+ 
     // PROCESSOR
     const procSelect = document.getElementById('edit_processor_select');
     const procCustom = document.getElementById('edit_processor_custom');
@@ -731,12 +775,20 @@ function openEditModal(data) {
         "Intel(R) Core(TM) i3-10100 CPU @ 4.30GHz","Intel(R) Core(TM) i3-10105 CPU @ 4.40GHz",
         "Intel(R) Core(TM) i5-10400 CPU @ 4.30GHz"
     ];
-    if (procOptions.includes(data.processor)) { procSelect.value = data.processor; procCustom.classList.add('hidden'); procCustom.value = ''; }
-    else { procSelect.value = 'Other'; procCustom.classList.remove('hidden'); procCustom.value = data.processor || ''; }
-
+    if (procOptions.includes(data.processor)) {
+        procSelect.value = data.processor;
+        procCustom.classList.add('hidden'); procCustom.value = '';
+    } else {
+        procSelect.value = 'Other';
+        procCustom.classList.remove('hidden'); procCustom.value = data.processor || '';
+    }
+ 
     // STATUS color
     const status = document.getElementById('edit_status');
-    if (status) changeEditStatusColor(status);
+    if (status) {
+        status.value = data.status ?? '';
+        changeEditStatusColor(status);
+    }
 }
 </script>
 

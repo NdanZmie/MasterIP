@@ -17,10 +17,6 @@
             max-height:92vh; overflow:hidden;
             animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
         ">
-            {{-- @keyframes modalIn {
-                from { opacity:0; transform:translateY(24px) scale(0.97); }
-                to   { opacity:1; transform:translateY(0) scale(1); }
-            } --}}
 
             {{-- TOP STRIPE --}}
             <div style="height:4px; background:linear-gradient(90deg,#059669,#10b981,#34d399,#6ee7b7); flex-shrink:0;"></div>
@@ -81,6 +77,23 @@
                             <input name="ip" class="modal-input" required placeholder="Contoh: 192.168.1.10">
                         </div>
 
+                        {{-- ← BARU: Computer Name --}}
+                        <div>
+                            <label class="modal-label">Computer Name</label>
+                            <input name="compname" class="modal-input" placeholder="Contoh: PC-EDP-01">
+                        </div>
+
+                        <div>
+                            <label class="modal-label">Nama Pengguna</label>
+                            <input name="nama" class="modal-input" required placeholder="Nama pengguna">
+                        </div>
+
+                        {{-- ← BARU: NIK --}}
+                        <div>
+                            <label class="modal-label">NIK <span style="color:#cbd5e1; font-weight:400;">(opsional)</span></label>
+                            <input name="nik" class="modal-input" placeholder="Nomor Induk Karyawan">
+                        </div>
+
                         <div>
                             <label class="modal-label">Departemen</label>
                             <select name="dept" id="deptSelect" class="modal-input" onchange="toggleDeptInput(this)" required>
@@ -107,11 +120,6 @@
                         </div>
 
                         <div>
-                            <label class="modal-label">Nama Pengguna</label>
-                            <input name="nama" class="modal-input" required placeholder="Nama pengguna">
-                        </div>
-
-                        <div>
                             <label class="modal-label">Status</label>
                             <select name="status" id="statusSelect" class="modal-input" required onchange="changeStatusColor(this)">
                                 <option value="">-- Pilih Status --</option>
@@ -120,6 +128,7 @@
                                 <option value="BAGUS">BAGUS</option>
                             </select>
                         </div>
+
                     </div>
 
                     {{-- SECTION: Hardware --}}
@@ -340,50 +349,45 @@
 
 <script>
 function changeStatusColor(select) {
-    const value = select.value;
     select.style.backgroundColor = '';
     select.style.color = '';
-    if (value === 'UNDER') { select.style.backgroundColor = '#fee2e2'; select.style.color = '#b91c1c'; }
-    else if (value === 'AMAN') { select.style.backgroundColor = '#fef9c3'; select.style.color = '#92400e'; }
-    else if (value === 'BAGUS') { select.style.backgroundColor = '#dcfce7'; select.style.color = '#166534'; }
+    if (select.value === 'UNDER') { select.style.backgroundColor = '#fee2e2'; select.style.color = '#b91c1c'; }
+    else if (select.value === 'AMAN')  { select.style.backgroundColor = '#fef9c3'; select.style.color = '#92400e'; }
+    else if (select.value === 'BAGUS') { select.style.backgroundColor = '#dcfce7'; select.style.color = '#166534'; }
 }
-
 function updateCharCount() {
-    const input = document.getElementById('keteranganInput');
+    const len = document.getElementById('keteranganInput').value.length;
     const counter = document.getElementById('charCount');
-    const len = input.value.length;
     counter.innerText = len;
     counter.style.color = len > 80 ? '#ef4444' : '#10b981';
 }
-
 function toggleMerkInput(select) {
-    const custom = document.getElementById('merkCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); }
-    else { custom.classList.add('hidden'); custom.value = ''; }
+    const c = document.getElementById('merkCustom');
+    select.value === 'Other' ? c.classList.remove('hidden') : (c.classList.add('hidden'), c.value='');
 }
 function toggleDeptInput(select) {
-    const custom = document.getElementById('deptCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('deptCustom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleRamInput(select) {
-    const custom = document.getElementById('ramCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('ramCustom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleStorageInput(select) {
-    const custom = document.getElementById('storageCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('storageCustom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleWindowsInput(select) {
-    const custom = document.getElementById('windowsCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('windowsCustom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleProcessorInput(select) {
-    const custom = document.getElementById('processorCustom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('processorCustom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 </script>

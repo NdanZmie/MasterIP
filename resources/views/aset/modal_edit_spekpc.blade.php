@@ -60,7 +60,6 @@
 
                 <form id="editForm" method="POST" class="space-y-4">
                     @csrf
-                    {{-- TIDAK PAKAI @method('PUT') karena route pakai POST --}}
 
                     {{-- SECTION: Identitas --}}
                     <div style="
@@ -77,6 +76,23 @@
                         <div>
                             <label class="edit-label">IP Address</label>
                             <input id="edit_ip" name="ip" class="edit-input" required>
+                        </div>
+
+                        {{-- ← BARU: Computer Name --}}
+                        <div>
+                            <label class="edit-label">Computer Name</label>
+                            <input id="edit_compname" name="compname" class="edit-input" placeholder="Contoh: PC-EDP-01">
+                        </div>
+
+                        <div>
+                            <label class="edit-label">Nama Pengguna</label>
+                            <input id="edit_nama" name="nama" class="edit-input" required>
+                        </div>
+
+                        {{-- ← BARU: NIK --}}
+                        <div>
+                            <label class="edit-label">NIK</label>
+                            <input id="edit_nik" name="nik" class="edit-input" placeholder="Nomor Induk Karyawan">
                         </div>
 
                         <div>
@@ -102,11 +118,6 @@
                             </select>
                             <input type="text" id="edit_dept_custom" name="dept_custom"
                                 class="edit-input hidden" style="margin-top:8px;" placeholder="Isi dept lainnya...">
-                        </div>
-
-                        <div>
-                            <label class="edit-label">Nama Pengguna</label>
-                            <input id="edit_nama" name="nama" class="edit-input" required>
                         </div>
 
                         <div>
@@ -347,50 +358,48 @@ function closeEditModal() {
 }
 
 function changeEditStatusColor(select) {
-    const value = select.value;
     select.style.backgroundColor = '';
     select.style.color = '';
-    if (value === 'UNDER') { select.style.backgroundColor = '#fee2e2'; select.style.color = '#b91c1c'; }
-    else if (value === 'AMAN') { select.style.backgroundColor = '#fef9c3'; select.style.color = '#92400e'; }
-    else if (value === 'BAGUS') { select.style.backgroundColor = '#dcfce7'; select.style.color = '#166534'; }
+    if (select.value === 'UNDER')      { select.style.backgroundColor = '#fee2e2'; select.style.color = '#b91c1c'; }
+    else if (select.value === 'AMAN')  { select.style.backgroundColor = '#fef9c3'; select.style.color = '#92400e'; }
+    else if (select.value === 'BAGUS') { select.style.backgroundColor = '#dcfce7'; select.style.color = '#166534'; }
 }
 
 function updateEditCharCount() {
-    const input = document.getElementById('edit_keterangan');
+    const len = document.getElementById('edit_keterangan').value.length;
     const counter = document.getElementById('editCharCount');
-    const length = input.value.length;
-    counter.innerText = length;
-    counter.style.color = length > 80 ? '#ef4444' : '#f59e0b';
+    counter.innerText = len;
+    counter.style.color = len > 80 ? '#ef4444' : '#f59e0b';
 }
 
 function toggleEditMerkInput(select) {
-    const custom = document.getElementById('edit_merk_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_merk_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleEditDeptInput(select) {
-    const custom = document.getElementById('edit_dept_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_dept_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleEditRamInput(select) {
-    const custom = document.getElementById('edit_ram_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_ram_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleEditStorageInput(select) {
-    const custom = document.getElementById('edit_storage_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_storage_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleEditWindowsInput(select) {
-    const custom = document.getElementById('edit_windows_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_windows_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 function toggleEditProcessorInput(select) {
-    const custom = document.getElementById('edit_processor_custom');
-    if (select.value === 'Other') { custom.classList.remove('hidden'); custom.required = true; }
-    else { custom.classList.add('hidden'); custom.value = ''; custom.required = false; }
+    const c = document.getElementById('edit_processor_custom');
+    if (select.value === 'Other') { c.classList.remove('hidden'); c.required = true; }
+    else { c.classList.add('hidden'); c.value = ''; c.required = false; }
 }
 </script>
