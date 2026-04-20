@@ -87,6 +87,7 @@ class SpekpcController extends Controller
         ? $request->processor_custom
         : $request->processor;
         
+        $validated['status'] = strtoupper(trim($request->status));
         Spekpc::create($request->merge($validated)->all());
 
         return redirect('/spekpc')->with('success', 'Data berhasil ditambahkan');
@@ -131,6 +132,8 @@ class SpekpcController extends Controller
         ? $request->processor_custom
         : ($request->processor ?: $data->processor);
 
+
+    $validated['status'] = strtoupper(trim($request->status));
     $data->update($validated);
 
     return redirect('/spekpc')->with('success', 'Data berhasil diupdate');

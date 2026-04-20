@@ -27,11 +27,20 @@ class Spekpc extends Model
     ];
 public function getStatusColorAttribute()
 {
-    return match(strtoupper(trim($this->status))) {
-        'UNDER' => 'bg-red-100 text-red-700',
-        'AMAN' => 'bg-yellow-100 text-yellow-700',
-        'BAGUS' => 'bg-green-100 text-green-700',
-        default => 'bg-gray-100 text-gray-500'
-    };
+    $status = strtoupper(trim((string) $this->status));
+
+    if ($status === 'UNDER') {
+        return 'bg-red-100 text-red-700';
+    }
+
+    if ($status === 'AMAN') {
+        return 'bg-yellow-100 text-yellow-700';
+    }
+
+    if ($status === 'BAGUS') {
+        return 'bg-green-100 text-green-700';
+    }
+
+    return 'bg-gray-100 text-gray-500';
 }}
 
