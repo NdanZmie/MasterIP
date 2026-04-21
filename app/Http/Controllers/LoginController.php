@@ -14,7 +14,7 @@ class LoginController extends Controller
     {
         // Jika sudah login, langsung redirect ke spekpc
         if (session('user_id')) {
-            return redirect('/spekpc');
+            return redirect('/dashboard');
         }
 
         return view('pages.login');
@@ -51,7 +51,7 @@ class LoginController extends Controller
             'user_nama' => $user->Nama,
         ]);
 
-        return redirect('/spekpc')->with('success', 'Selamat datang, ' . $user->Nama . '!');
+        return redirect('/dashboard')->with('success', 'Selamat datang, ' . $user->Nama . '!');
     }
 
     // =====================
