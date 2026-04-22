@@ -1,0 +1,43 @@
+Requirements
+- PHP 8.3
+- VSCODE
+- Node Newwest
+- Composer Newwest
+- git
+- Laragon 6 Recomended 
+- Phpmyadmin = mysql
+- Database sql file
+
+______TUToR Migrate____
+cd D:\laragon\www
+git clone https://github.com/username/repo.git masterip
+cd masterip
+composer install
+npm install
+npm run build
+cp .env.example .env
+# → edit .env dulu sebelum lanjut  (database, URL)
+php artisan key:generate
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+Attention 
+- Perhatikan Path PHP dan Node
+- pastikan di php.ini di laragon ; dihapus pada extension=zip
+- NPM jagnan lupa sebelum TES
+
+
+
+□ Folder ada di D:\laragon\www\masterip
+□ composer install selesai
+□ npm run build selesai
+□ .env sudah diisi (terutama DB & APP_URL)
+□ php artisan key:generate sudah
+□ php artisan storage:link sudah
+□ Nama DB di .env sama dengan DB yang sudah ada
+□ Virtual host .conf sudah dibuat
+□ Apache Laragon sudah di-restart
+□ Firewall port 80 sudah dibuka
+□ Auto-start Laragon aktif
