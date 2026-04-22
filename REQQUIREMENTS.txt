@@ -1,4 +1,4 @@
-Requirements
+*__Requirements
 - PHP 8.3
 - VSCODE
 - Node Newwest
@@ -8,7 +8,56 @@ Requirements
 - Phpmyadmin = mysql
 - Database sql file
 
-______TUToR Migrate____
+*___TUTOR UPDATE GIT___
+PC Kamu (192.168.75.147)          GitHub            Server (192.168.75.117)
+─────────────────────────         ──────            ──────────────────────
+Edit kode di VSCode          →    git push    →     git pull
+Test di local                            
+
+composer install (kalau ada package baru)
+npm run build (kalau ada perubahan frontend)
+ php artisan migrate (kalau ada migration baru)
+ php artisan config:cache
+
+DI UPDATE
+# 1. Cek perubahan apa saja
+git status
+
+# 2. Tambahkan semua perubahan
+git add .
+
+# 3. Commit dengan pesan jelas
+git commit -m "keterangan perubahan"
+
+# 4. Push ke GitHub
+git push origin main
+
+
+Tarik UPDATE GIT___
+# Masuk ke folder project
+cd D:\laragon\www\masterip
+
+# Ambil update dari GitHub
+git pull origin main
+
+# Kalau ada package PHP baru (composer.json berubah)
+composer install
+
+# Kalau ada perubahan CSS/JS/Vite
+npm install
+npm run build
+
+# Kalau ada migration baru
+php artisan migrate
+
+# Wajib setiap update — clear & refresh cache
+php artisan config:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+
+*______TUToR Migrate____
 cd D:\laragon\www
 git clone https://github.com/username/repo.git masterip
 cd masterip
@@ -29,7 +78,7 @@ Attention
 - NPM jagnan lupa sebelum TES
 
 
-
+___CekList  mIgrasi/Clone______
 □ Folder ada di D:\laragon\www\masterip
 □ composer install selesai
 □ npm run build selesai
