@@ -180,5 +180,24 @@ return [
         ],
 
     ],
+    'connections' => [
+
+    // ... koneksi lain (mysql, sqlite, dll) tetap ada ...
+
+    'masterip' => [
+        'driver'    => 'mysql',
+        'host'      => env('MASTERIP_DB_HOST', '127.0.0.1'),
+        'port'      => env('MASTERIP_DB_PORT', '3306'),
+        'database'  => env('MASTERIP_DB_DATABASE', 'masterip'),
+        'username'  => env('MASTERIP_DB_USERNAME', 'root'),
+        'password'  => env('MASTERIP_DB_PASSWORD', ''),
+        'charset'   => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix'    => '',
+        'strict'    => true,
+        'engine'    => null,
+    ],
+
+],
 
 ];

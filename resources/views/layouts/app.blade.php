@@ -338,6 +338,17 @@
                     </a>
                 </li>
 
+                {{-- Koneksi Toko --}}
+                <li>
+                    <a href="/koneksitoko" class="{{ request()->is('koneksitoko*') ? 'active' : '' }}" data-nav>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                        <span>Koneksi Toko</span>
+                    </a>
+                </li>
+
                 {{-- Data --}}
                 <li>
                     <a href="/data" class="{{ request()->is('data*') ? 'active' : '' }}" data-nav>
@@ -430,6 +441,7 @@
                         <li><a href="/data" data-nav>Data All</a></li>
                         <li><a href="/clip" data-nav>Clipboard</a></li>
                         <li><a href="/home" data-nav>Home</a></li>
+                        <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
                     </ul>
                 </div>
 

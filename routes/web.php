@@ -7,6 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\DashboardController;  // ← TAMBAH
+use App\Http\Controllers\KoneksiTokoController;
 
 //
 // =======================
@@ -86,5 +87,19 @@ Route::middleware('auth.session')->group(function () {
     // ── NETWORK MONITOR ───────────────────────
     Route::get('/network',       [NetworkController::class, 'index'])->name('network');
     Route::post('/network/ping', [NetworkController::class, 'ping'])->name('network.ping');
+
+
+// ── KONEKSI TOKO ─────────────────────────────────────
+Route::get('/koneksitoko',            [KoneksiTokoController::class, 'index'])->name('koneksitoko');
+Route::post('/koneksitoko/store',     [KoneksiTokoController::class, 'store']);
+Route::post('/koneksitoko/update/{id}', [KoneksiTokoController::class, 'update']);
+Route::post('/koneksitoko/delete/{id}', [KoneksiTokoController::class, 'destroy']);
+Route::post('/koneksitoko/ping',      [KoneksiTokoController::class, 'ping'])->name('koneksitoko.ping');
+Route::get('/koneksitoko/export/excel', [KoneksiTokoController::class, 'exportExcel']);
+
+
+
+
+
 
 });
