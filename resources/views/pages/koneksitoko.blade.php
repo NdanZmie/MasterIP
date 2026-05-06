@@ -1013,6 +1013,18 @@ function showToast(msg, type = '') {
 }
 
 /* ── Auto scan on load ───────────────────────── */
-window.addEventListener('DOMContentLoaded', () => setTimeout(scanAll, 600));
+window.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('ping-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        requestAnimationFrame(() => {
+            modal.style.opacity = '';
+            modal.style.pointerEvents = '';
+        });
+    }
+    setTimeout(scanAll, 900);
+});
 </script>
 @endsection

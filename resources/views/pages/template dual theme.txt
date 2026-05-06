@@ -1,3 +1,4 @@
+{{-- Login.blade --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +14,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 
 /* ═══════════════════════════════════════════════
-   DARK THEME VARIABLES
+   DARK THEME VARIABLES (default)
 ═══════════════════════════════════════════════ */
 :root {
   --bg:#0a0f1e;
@@ -38,6 +39,7 @@
   --brand-icon-bg:linear-gradient(135deg,#0d2248,#1a3a6b);
   --brand-icon-border:rgba(56,139,253,0.4);
   --brand-icon-shadow:0 0 20px rgba(56,139,253,0.3),0 4px 16px rgba(0,0,0,0.5);
+  --brand-icon-stroke:var(--accent2);
   --brand-sub-bg:rgba(56,139,253,0.1);
   --brand-sub-border:rgba(56,139,253,0.2);
   --card-shadow:0 0 0 1px rgba(255,255,255,0.04) inset,0 2px 0 rgba(56,139,253,0.12) inset,0 32px 80px rgba(0,0,0,0.65),0 0 60px rgba(56,139,253,0.07);
@@ -66,6 +68,24 @@
   --float-bg:rgba(14,22,45,0.85);
   --float-border:rgba(56,139,253,0.22);
   --float-val:#58a6ff;
+  --modal-bg:#0d1428;
+  --modal-border:rgba(56,139,253,0.28);
+  --modal-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 60px rgba(56,139,253,0.1);
+  --modal-overlay:rgba(0,0,0,0.75);
+  --modal-tag-color:rgba(56,139,253,0.6);
+  --modal-title-color:#e6edf3;
+  --modal-desc-color:#7d8590;
+  --modal-input-bg:rgba(13,20,40,0.9);
+  --modal-input-border:rgba(56,139,253,0.18);
+  --modal-input-border-focus:rgba(56,139,253,0.5);
+  --modal-input-shadow-focus:0 0 0 4px rgba(56,139,253,0.1);
+  --modal-input-color:#e6edf3;
+  --modal-lock-stroke:#7d8590;
+  --modal-cancel-bg:transparent;
+  --modal-cancel-border:rgba(56,139,253,0.18);
+  --modal-cancel-color:#7d8590;
+  --modal-cancel-hover-bg:rgba(56,139,253,0.08);
+  --modal-cancel-hover-color:#e6edf3;
   --transition:0.55s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -95,6 +115,7 @@ body.theme-light {
   --brand-icon-bg:linear-gradient(135deg,#1d4ed8,#3b82f6);
   --brand-icon-border:transparent;
   --brand-icon-shadow:0 6px 20px rgba(37,99,235,0.35);
+  --brand-icon-stroke:#ffffff;
   --brand-sub-bg:#dbeafe;
   --brand-sub-border:rgba(37,99,235,0.2);
   --card-shadow:0 4px 0 rgba(37,99,235,0.08),0 16px 64px rgba(37,99,235,0.12),0 0 0 1px rgba(255,255,255,0.8) inset,0 1px 0 rgba(255,255,255,0.9) inset;
@@ -123,6 +144,24 @@ body.theme-light {
   --float-bg:rgba(255,255,255,0.8);
   --float-border:rgba(37,99,235,0.14);
   --float-val:#2563eb;
+  --modal-bg:#ffffff;
+  --modal-border:rgba(37,99,235,0.2);
+  --modal-shadow:0 24px 64px rgba(37,99,235,0.18);
+  --modal-overlay:rgba(15,23,42,0.35);
+  --modal-tag-color:rgba(37,99,235,0.6);
+  --modal-title-color:#0f172a;
+  --modal-desc-color:#64748b;
+  --modal-input-bg:#f4f8ff;
+  --modal-input-border:rgba(37,99,235,0.14);
+  --modal-input-border-focus:rgba(37,99,235,0.45);
+  --modal-input-shadow-focus:0 0 0 4px rgba(37,99,235,0.09);
+  --modal-input-color:#0f172a;
+  --modal-lock-stroke:#94a3b8;
+  --modal-cancel-bg:#ffffff;
+  --modal-cancel-border:rgba(37,99,235,0.14);
+  --modal-cancel-color:#64748b;
+  --modal-cancel-hover-bg:#dbeafe;
+  --modal-cancel-hover-color:#1d4ed8;
 }
 
 /* ═══════════════════════════════════════════════
@@ -142,11 +181,10 @@ body {
 ═══════════════════════════════════════════════ */
 #masterCanvas {
   position:fixed;inset:0;z-index:0;
-  transition:opacity 0.4s ease;
 }
 
 /* ═══════════════════════════════════════════════
-   DARK THEME — SCENE LAYERS
+   DARK SCENE
 ═══════════════════════════════════════════════ */
 .dark-scene {
   position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
@@ -167,8 +205,7 @@ body.theme-light .dark-scene { opacity:0; pointer-events:none; }
 .scan-line {
   position:absolute;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,rgba(56,139,253,0.7),rgba(57,208,216,0.5),transparent);
-  animation:scanAnim 5s ease-in-out infinite;pointer-events:none;
-  filter:blur(0.5px);
+  animation:scanAnim 5s ease-in-out infinite;pointer-events:none;filter:blur(0.5px);
 }
 @keyframes scanAnim {
   0%   { top:-2px;opacity:0 }
@@ -177,7 +214,6 @@ body.theme-light .dark-scene { opacity:0; pointer-events:none; }
   100% { top:100%;opacity:0 }
 }
 
-/* Enhanced data streams */
 .data-stream {
   position:absolute;font-family:'JetBrains Mono',monospace;
   font-size:11px;opacity:0;animation:streamFall linear infinite;
@@ -191,7 +227,7 @@ body.theme-light .dark-scene { opacity:0; pointer-events:none; }
 }
 
 /* ═══════════════════════════════════════════════
-   LIGHT THEME — BLOB BACKGROUND
+   LIGHT SCENE
 ═══════════════════════════════════════════════ */
 .light-scene {
   position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
@@ -200,8 +236,7 @@ body.theme-light .dark-scene { opacity:0; pointer-events:none; }
 body:not(.theme-light) .light-scene { opacity:0; pointer-events:none; }
 
 .blob {
-  position:absolute;border-radius:50%;
-  filter:blur(72px);opacity:0;
+  position:absolute;border-radius:50%;filter:blur(72px);opacity:0;
   animation:blobFloat linear infinite, blobFadeIn 0.6s ease forwards;
 }
 body.theme-light .blob { opacity:0.45; }
@@ -254,19 +289,36 @@ body.theme-light .deco-card {
 .deco-val { color:var(--float-val);font-size:13px;font-weight:500;font-family:'JetBrains Mono',monospace;transition:color var(--transition) }
 .deco-dot { display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle }
 
-/* Dark-only deco cards (absolute inside scene) */
+/* Dark-only deco (inside dark-scene) */
 .dark-deco {
   position:absolute;
-  background:var(--float-bg);
-  border:1px solid var(--float-border);
+  background:rgba(14,22,45,0.85);
+  border:1px solid rgba(56,139,253,0.22);
   border-radius:14px;padding:12px 17px;
   backdrop-filter:blur(14px);
   font-family:'JetBrains Mono',monospace;
-  font-size:10px;color:var(--muted);
+  font-size:10px;color:#7d8590;
   animation:floatCard ease-in-out infinite;
+  box-shadow:0 4px 24px rgba(0,0,0,0.5),0 0 0 1px rgba(56,139,253,0.08) inset;
 }
-.dark-deco .deco-label { font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px }
-.dark-deco .deco-val   { color:var(--float-val);font-size:13px;font-weight:500;font-family:'JetBrains Mono',monospace }
+.dark-deco .deco-label { font-size:9px;letter-spacing:1.5px;color:#7d8590;margin-bottom:4px }
+.dark-deco .deco-val   { color:#58a6ff;font-size:13px;font-weight:500;font-family:'JetBrains Mono',monospace }
+
+/* ═══════════════════════════════════════════════
+   CSS PARTICLES (light theme)
+═══════════════════════════════════════════════ */
+.css-particle {
+  position:fixed;border-radius:50%;
+  background:rgba(37,99,235,0.22);
+  animation:cssFloat ease-in-out infinite;
+  pointer-events:none;z-index:2;
+  transition:opacity var(--transition);
+}
+body:not(.theme-light) .css-particle { opacity:0 }
+@keyframes cssFloat {
+  0%,100% { transform:translateY(0) scale(1);opacity:0.5 }
+  50%      { transform:translateY(-26px) scale(1.2);opacity:1 }
+}
 
 /* ═══════════════════════════════════════════════
    WRAPPER
@@ -281,7 +333,7 @@ body.theme-light .deco-card {
   to   { opacity:1;transform:none }
 }
 
-/* ── STATUS BAR (dark) ── */
+/* STATUS BAR (dark) */
 .status-bar {
   display:flex;align-items:center;justify-content:center;gap:10px;
   margin-bottom:16px;
@@ -295,7 +347,7 @@ body.theme-light .status-bar { opacity:0;pointer-events:none;transform:translate
 .sb-sep  { color:rgba(125,133,144,0.3);font-size:14px }
 @keyframes dotPulse { 0%,100%{opacity:1}50%{opacity:0.3} }
 
-/* ── TOP BADGE (light) ── */
+/* TOP BADGE (light) */
 .top-badge {
   display:flex;align-items:center;justify-content:center;
   margin-bottom:18px;
@@ -338,7 +390,6 @@ body:not(.theme-light) .top-badge { opacity:0;pointer-events:none;transform:tran
   border-color:var(--card-border-hover);
   box-shadow:var(--card-shadow-hover);
 }
-/* Top gradient bar */
 .card::before {
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,
@@ -350,7 +401,6 @@ body:not(.theme-light) .top-badge { opacity:0;pointer-events:none;transform:tran
   );
   background-size:200% 100%;
   animation:topBarFlow 3s linear infinite;
-  transition:opacity var(--transition);
 }
 @keyframes topBarFlow { 0%{background-position:0%}100%{background-position:200%} }
 
@@ -393,7 +443,7 @@ body:not(.theme-light) .top-badge { opacity:0;pointer-events:none;transform:tran
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent 60%);
 }
-.brand-icon svg { width:24px;height:24px;stroke:white;position:relative;z-index:1 }
+.brand-icon svg { width:24px;height:24px;stroke:var(--brand-icon-stroke);position:relative;z-index:1;transition:stroke var(--transition) }
 @keyframes iconBoot { from{transform:scale(0.4) rotate(-20deg);opacity:0}to{transform:none;opacity:1} }
 
 .brand-icon-ring {
@@ -421,7 +471,7 @@ body.theme-light .brand-icon-ring { opacity:0 }
   transition:all var(--transition);
 }
 
-/* ─── THEME TOGGLE BUTTON ─── */
+/* THEME TOGGLE */
 .theme-btn {
   flex-shrink:0;
   width:40px;height:40px;border-radius:12px;
@@ -439,7 +489,6 @@ body.theme-light .brand-icon-ring { opacity:0 }
   box-shadow:0 4px 20px rgba(var(--accent-rgb),0.35);
 }
 .theme-btn:active { transform:scale(0.93) rotate(-5deg) }
-/* Shine sweep on hover */
 .theme-btn::before {
   content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
@@ -447,29 +496,23 @@ body.theme-light .brand-icon-ring { opacity:0 }
   transition:background-position 0.4s;
 }
 .theme-btn:hover::before { background-position:200% }
-
 .theme-btn .t-icon {
   position:absolute;
   width:18px;height:18px;
   transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1);
 }
-/* Sun — shown in dark mode */
 .icon-sun { stroke:#f59e0b;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round }
 body:not(.theme-light) .icon-sun  { opacity:1;transform:rotate(0deg) scale(1) }
 body.theme-light       .icon-sun  { opacity:0;transform:rotate(90deg) scale(0.3) }
-/* Moon — shown in light mode */
 .icon-moon { stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round }
 body:not(.theme-light) .icon-moon { opacity:0;transform:rotate(-90deg) scale(0.3) }
 body.theme-light       .icon-moon { opacity:1;transform:rotate(0deg) scale(1) }
-
-/* Tooltip */
 .theme-tip {
   position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);
   background:var(--text);color:var(--bg);
   font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;
   padding:3px 8px;border-radius:5px;white-space:nowrap;
-  opacity:0;pointer-events:none;transition:opacity 0.2s;
-  z-index:20;
+  opacity:0;pointer-events:none;transition:opacity 0.2s;z-index:20;
 }
 .theme-tip::before { content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);border:3px solid transparent;border-bottom-color:var(--text) }
 .theme-btn:hover .theme-tip { opacity:1 }
@@ -584,14 +627,9 @@ body.theme-light .capslock-warn { color:#d97706 }
   box-shadow:var(--btn-shadow);
   animation:groupIn 0.5s 0.55s both;
 }
-/* Animated shine sweep */
 .btn-login::before {
   content:'';position:absolute;inset:0;
-  background:linear-gradient(105deg,
-    transparent 30%,
-    rgba(255,255,255,0.18) 50%,
-    transparent 70%
-  );
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.18) 50%,transparent 70%);
   background-size:200% 100%;background-position:-200%;
   animation:btnShine 2.8s ease-in-out infinite;
 }
@@ -695,60 +733,101 @@ body.theme-light .capslock-warn { color:#d97706 }
 @keyframes rippleAnim { to{transform:scale(4);opacity:0} }
 
 /* ═══════════════════════════════════════════════
-   CSS PARTICLES (light)
-═══════════════════════════════════════════════ */
-.css-particle {
-  position:fixed;border-radius:50%;
-  background:rgba(37,99,235,0.22);
-  animation:cssFloat ease-in-out infinite;
-  pointer-events:none;z-index:2;
-  transition:opacity var(--transition);
-}
-body:not(.theme-light) .css-particle { opacity:0 }
-@keyframes cssFloat {
-  0%,100% { transform:translateY(0) scale(1);opacity:0.5 }
-  50%      { transform:translateY(-26px) scale(1.2);opacity:1 }
-}
-
-/* ═══════════════════════════════════════════════
-   MODAL
+   MODAL — FULLY THEMED VIA CSS VARS
 ═══════════════════════════════════════════════ */
 #regPasswordModal {
-  display:none;position:fixed;inset:0;z-index:99999;
+  display:none;
+  position:fixed;inset:0;z-index:99999;
   align-items:center;justify-content:center;
   backdrop-filter:blur(8px);
-  transition:background 0.3s;
+  background:var(--modal-overlay);
+  transition:background var(--transition);
 }
+#regPasswordModal.open { display:flex }
+
 .modal-inner {
+  background:var(--modal-bg);
+  border:1px solid var(--modal-border);
   border-radius:20px;padding:36px 32px;
   width:100%;max-width:380px;position:relative;
+  box-shadow:var(--modal-shadow);
   animation:modalIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
   transition:background var(--transition),border-color var(--transition),box-shadow var(--transition);
 }
 @keyframes modalIn { from{opacity:0;transform:scale(0.9) translateY(20px)}to{opacity:1;transform:none} }
+
 .modal-bar {
   position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,var(--accent),var(--cyan),var(--purple));
   border-radius:20px 20px 0 0;
+  background-size:200% 100%;
+  animation:topBarFlow 3s linear infinite;
 }
-.modal-tag { font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;margin-bottom:8px }
-.modal-title { font-size:17px;font-weight:700;margin-bottom:6px }
-.modal-desc  { font-size:12.5px;margin-bottom:22px;line-height:1.6 }
+
+.modal-tag {
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:2px;margin-bottom:8px;
+  color:var(--modal-tag-color);
+  transition:color var(--transition);
+}
+.modal-title {
+  font-size:17px;font-weight:700;margin-bottom:6px;
+  color:var(--modal-title-color);
+  transition:color var(--transition);
+}
+.modal-desc {
+  font-size:12.5px;margin-bottom:22px;line-height:1.6;
+  color:var(--modal-desc-color);
+  transition:color var(--transition);
+}
+
 .modal-input-wrap { position:relative;margin-bottom:8px }
-.modal-lock { position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none }
+.modal-lock {
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;pointer-events:none;
+  stroke:var(--modal-lock-stroke);
+  transition:stroke var(--transition);
+}
+
 .modal-input {
-  width:100%;border-radius:11px;
+  width:100%;background:var(--modal-input-bg);
+  border:1.5px solid var(--modal-input-border);
+  border-radius:11px;
   padding:12px 14px 12px 40px;font-size:14px;
   font-family:'Space Grotesk',sans-serif;
+  color:var(--modal-input-color);
   outline:none;caret-color:var(--accent);
   transition:border-color 0.2s,box-shadow 0.2s,background var(--transition),color var(--transition),border-color var(--transition);
 }
-.modal-error { font-size:11px;min-height:16px;margin-bottom:14px;display:none;font-family:'JetBrains Mono',monospace;color:var(--error-color) }
+.modal-input::placeholder { color:rgba(125,133,144,0.4) }
+body.theme-light .modal-input::placeholder { color:#b0bed0 }
+.modal-input:focus {
+  border-color:var(--modal-input-border-focus);
+  box-shadow:var(--modal-input-shadow-focus);
+}
+
+.modal-error {
+  font-size:11px;min-height:16px;margin-bottom:14px;
+  display:none;font-family:'JetBrains Mono',monospace;
+  color:var(--error-color);
+  transition:color var(--transition);
+}
+.modal-error.show { display:block }
+
 .modal-btns { display:flex;gap:10px }
 .modal-cancel {
   flex:1;padding:11px;border-radius:10px;
   font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;
-  cursor:pointer;transition:all 0.2s;
+  cursor:pointer;
+  background:var(--modal-cancel-bg);
+  border:1.5px solid var(--modal-cancel-border);
+  color:var(--modal-cancel-color);
+  transition:all 0.2s;
+}
+.modal-cancel:hover {
+  background:var(--modal-cancel-hover-bg);
+  color:var(--modal-cancel-hover-color);
 }
 .modal-confirm {
   flex:2;padding:11px;
@@ -760,23 +839,24 @@ body:not(.theme-light) .css-particle { opacity:0 }
   transition:transform 0.15s,box-shadow 0.2s;
 }
 .modal-confirm:hover { transform:translateY(-1px);box-shadow:0 8px 24px rgba(var(--accent-rgb),0.4) }
+.modal-confirm:active { transform:translateY(0) }
 </style>
 </head>
 
 {{-- ══ MODAL PASSWORD REGISTER ══ --}}
 <div id="regPasswordModal">
-  <div class="modal-inner" id="modalInner">
+  <div class="modal-inner">
     <div class="modal-bar"></div>
-    <div class="modal-tag" id="modalTag">AKSES TERBATAS</div>
-    <div class="modal-title" id="modalTitle">Konfirmasi Password</div>
-    <div class="modal-desc" id="modalDesc">Masukkan password EDP untuk mengakses halaman registrasi.</div>
+    <div class="modal-tag">AKSES TERBATAS</div>
+    <div class="modal-title">Konfirmasi Password</div>
+    <div class="modal-desc">Masukkan password EDP untuk mengakses halaman registrasi.</div>
     <div class="modal-input-wrap">
-      <svg class="modal-lock" id="modalLock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <svg class="modal-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       <input type="password" id="regPassInput" class="modal-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')confirmRegPass()">
     </div>
     <div class="modal-error" id="regPassError">✕ Password salah. Coba lagi.</div>
     <div class="modal-btns">
-      <button class="modal-cancel" id="modalCancel" onclick="closeRegModal()">Batal</button>
+      <button class="modal-cancel" onclick="closeRegModal()">Batal</button>
       <button class="modal-confirm" onclick="confirmRegPass()">Konfirmasi →</button>
     </div>
   </div>
@@ -820,7 +900,7 @@ body:not(.theme-light) .css-particle { opacity:0 }
 </div>
 <div class="dot-grid"></div>
 
-{{-- Light deco cards --}}
+{{-- Light deco cards (fixed, shared) --}}
 <div class="deco-card" style="left:4%;top:22%;animation-duration:6s">
   <div class="deco-label">DEVICES ONLINE</div>
   <div class="deco-val">● 142 Active</div>
@@ -882,9 +962,8 @@ body:not(.theme-light) .css-particle { opacity:0 }
         <div class="brand-sub">By ZMIE_V1.0 BETA</div>
       </div>
 
-      {{-- ★ THEME TOGGLE ★ --}}
+      {{-- THEME TOGGLE --}}
       <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Ganti Tema">
-        {{-- Sun (click = go light) --}}
         <svg class="t-icon icon-sun" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
@@ -896,7 +975,6 @@ body:not(.theme-light) .css-particle { opacity:0 }
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
-        {{-- Moon (click = go dark) --}}
         <svg class="t-icon icon-moon" viewBox="0 0 24 24">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
@@ -985,11 +1063,11 @@ body:not(.theme-light) .css-particle { opacity:0 }
 /* ════════════════════════════════════════════════
    THEME SYSTEM
 ════════════════════════════════════════════════ */
-const body = document.body;
-const themeTip = document.getElementById('themeTip');
-let theme = localStorage.getItem('masterip-theme') || 'dark';
+const body      = document.body;
+const themeTip  = document.getElementById('themeTip');
+let theme       = localStorage.getItem('masterip-theme') || 'dark';
 
-function applyTheme(t, animate) {
+function applyTheme(t) {
   theme = t;
   if (t === 'light') {
     body.classList.add('theme-light');
@@ -999,17 +1077,12 @@ function applyTheme(t, animate) {
     themeTip.textContent = 'Tema Terang';
   }
   localStorage.setItem('masterip-theme', t);
-  syncModal(t);
 }
-
-function toggleTheme() {
-  applyTheme(theme === 'dark' ? 'light' : 'dark', true);
-}
-
-applyTheme(theme, false);
+function toggleTheme() { applyTheme(theme === 'dark' ? 'light' : 'dark'); }
+applyTheme(theme);
 
 /* ════════════════════════════════════════════════
-   UNIFIED CANVAS — works for both themes
+   UNIFIED CANVAS — dual theme particles
 ════════════════════════════════════════════════ */
 const canvas = document.getElementById('masterCanvas');
 const ctx    = canvas.getContext('2d');
@@ -1018,7 +1091,6 @@ function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
 resize();
 window.addEventListener('resize', resize);
 
-/* Dark particles */
 const DARK_N = 65, DARK_MAX = 145;
 const darkPts = Array.from({length:DARK_N}, () => ({
   x: Math.random()*innerWidth, y: Math.random()*innerHeight,
@@ -1026,7 +1098,6 @@ const darkPts = Array.from({length:DARK_N}, () => ({
   r: Math.random()*2+0.8, op: Math.random()*0.45+0.1
 }));
 
-/* Light particles */
 const LIGHT_N = 50, LIGHT_MAX = 130;
 const lightPts = Array.from({length:LIGHT_N}, () => ({
   x: Math.random()*innerWidth, y: Math.random()*innerHeight,
@@ -1039,8 +1110,7 @@ window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
 
 function renderLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (theme === 'dark') renderDark();
-  else renderLight();
+  theme === 'dark' ? renderDark() : renderLight();
   requestAnimationFrame(renderLoop);
 }
 
@@ -1057,16 +1127,14 @@ function renderDark() {
       const q=darkPts[j];
       const d=Math.hypot(p.x-q.x,p.y-q.y);
       if(d<DARK_MAX) {
-        const a=(1-d/DARK_MAX)*0.15;
         ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-        ctx.strokeStyle=`rgba(${CR},${CG},${CB},${a})`; ctx.lineWidth=0.5; ctx.stroke();
+        ctx.strokeStyle=`rgba(${CR},${CG},${CB},${(1-d/DARK_MAX)*0.15})`; ctx.lineWidth=0.5; ctx.stroke();
       }
     }
     const md=Math.hypot(p.x-mx,p.y-my);
     if(md<120) {
-      const a=(1-md/120)*0.35;
       ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(mx,my);
-      ctx.strokeStyle=`rgba(57,208,216,${a})`; ctx.lineWidth=0.9; ctx.stroke();
+      ctx.strokeStyle=`rgba(57,208,216,${(1-md/120)*0.35})`; ctx.lineWidth=0.9; ctx.stroke();
     }
   }
 }
@@ -1084,24 +1152,21 @@ function renderLight() {
       const q=lightPts[j];
       const d=Math.hypot(p.x-q.x,p.y-q.y);
       if(d<LIGHT_MAX) {
-        const a=(1-d/LIGHT_MAX)*0.13;
         ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-        ctx.strokeStyle=`rgba(${CR},${CG},${CB},${a})`; ctx.lineWidth=0.5; ctx.stroke();
+        ctx.strokeStyle=`rgba(${CR},${CG},${CB},${(1-d/LIGHT_MAX)*0.13})`; ctx.lineWidth=0.5; ctx.stroke();
       }
     }
     const md=Math.hypot(p.x-mx,p.y-my);
     if(md<110) {
-      const a=(1-md/110)*0.28;
       ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(mx,my);
-      ctx.strokeStyle=`rgba(${CR},${CG},${CB},${a})`; ctx.lineWidth=0.8; ctx.stroke();
+      ctx.strokeStyle=`rgba(${CR},${CG},${CB},${(1-md/110)*0.28})`; ctx.lineWidth=0.8; ctx.stroke();
     }
   }
 }
-
 renderLoop();
 
 /* ════════════════════════════════════════════════
-   CSS PARTICLES (light theme)
+   CSS PARTICLES (light theme floaters)
 ════════════════════════════════════════════════ */
 for (let i=0;i<18;i++) {
   const el = document.createElement('div');
@@ -1184,7 +1249,7 @@ loginBtn.addEventListener('click', function(e) {
   setTimeout(() => rip.remove(), 650);
 });
 
-/* ── Card 3D tilt ── */
+/* Card 3D tilt */
 const card = document.getElementById('login-card');
 card.addEventListener('mousemove', e => {
   const r  = card.getBoundingClientRect();
@@ -1199,85 +1264,46 @@ card.addEventListener('mouseleave', () => {
 });
 
 /* ════════════════════════════════════════════════
-   REGISTER MODAL
+   REGISTER MODAL — fully CSS-var themed
 ════════════════════════════════════════════════ */
 const registerBtn = document.getElementById('register-btn');
-const tc = document.getElementById('tc');
-const tl = document.getElementById('tl');
-const regModal = document.getElementById('regPasswordModal');
+const tc          = document.getElementById('tc');
+const tl          = document.getElementById('tl');
+const regModal    = document.getElementById('regPasswordModal');
 
 registerBtn.addEventListener('click', e => {
   e.preventDefault();
-  regModal.style.display = 'flex';
-  syncModal(theme);
+  regModal.classList.add('open');
   setTimeout(() => document.getElementById('regPassInput').focus(), 100);
 });
 
-function syncModal(t) {
-  const inner    = document.getElementById('modalInner');
-  const lockSvg  = document.getElementById('modalLock');
-  const inp      = document.getElementById('regPassInput');
-  const errEl    = document.getElementById('regPassError');
-  const cancelBtn= document.getElementById('modalCancel');
-  const tag      = document.getElementById('modalTag');
-  const title    = document.getElementById('modalTitle');
-  const desc     = document.getElementById('modalDesc');
-
-  regModal.style.background = t==='dark' ? 'rgba(0,0,0,0.75)' : 'rgba(15,23,42,0.3)';
-
-  if (t === 'dark') {
-    inner.style.cssText    = 'background:#0d1428;border:1px solid rgba(56,139,253,0.28);box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 60px rgba(56,139,253,0.1)';
-    tag.style.color        = 'rgba(56,139,253,0.6)';
-    title.style.color      = '#e6edf3';
-    desc.style.color       = '#7d8590';
-    lockSvg.style.stroke   = '#7d8590';
-    inp.style.cssText      = 'width:100%;background:rgba(13,20,40,0.9);border:1px solid rgba(56,139,253,0.18);border-radius:10px;padding:12px 14px 12px 40px;font-size:14px;font-family:Space Grotesk,sans-serif;color:#e6edf3;outline:none;caret-color:#388bfd;transition:border-color 0.2s,box-shadow 0.2s';
-    cancelBtn.style.cssText= 'flex:1;padding:11px;background:transparent;border:1px solid rgba(56,139,253,0.18);border-radius:10px;font-size:13px;font-weight:600;font-family:Space Grotesk,sans-serif;color:#7d8590;cursor:pointer;transition:all 0.2s';
-    errEl.style.color      = '#f85149';
-  } else {
-    inner.style.cssText    = 'background:#ffffff;border:1.5px solid rgba(37,99,235,0.18);box-shadow:0 24px 64px rgba(37,99,235,0.18)';
-    tag.style.color        = 'rgba(37,99,235,0.6)';
-    title.style.color      = '#0f172a';
-    desc.style.color       = '#64748b';
-    lockSvg.style.stroke   = '#94a3b8';
-    inp.style.cssText      = 'width:100%;background:#f4f8ff;border:1.5px solid rgba(37,99,235,0.14);border-radius:10px;padding:12px 14px 12px 40px;font-size:14px;font-family:Space Grotesk,sans-serif;color:#0f172a;outline:none;caret-color:#2563eb;transition:border-color 0.2s,box-shadow 0.2s';
-    cancelBtn.style.cssText= 'flex:1;padding:11px;background:white;border:1.5px solid rgba(37,99,235,0.14);border-radius:10px;font-size:13px;font-weight:600;font-family:Space Grotesk,sans-serif;color:#64748b;cursor:pointer;transition:all 0.2s';
-    errEl.style.color      = '#dc2626';
-  }
-
-  inp.onfocus = () => {
-    inp.style.borderColor = t==='dark'?'rgba(56,139,253,0.5)':'rgba(37,99,235,0.45)';
-    inp.style.boxShadow   = t==='dark'?'0 0 0 4px rgba(56,139,253,0.1)':'0 0 0 4px rgba(37,99,235,0.09)';
-  };
-  inp.onblur = () => {
-    inp.style.borderColor = t==='dark'?'rgba(56,139,253,0.18)':'rgba(37,99,235,0.14)';
-    inp.style.boxShadow   = 'none';
-  };
-}
-
 function closeRegModal() {
-  regModal.style.display = 'none';
-  document.getElementById('regPassInput').value = '';
-  document.getElementById('regPassError').style.display = 'none';
+  regModal.classList.remove('open');
+  const inp = document.getElementById('regPassInput');
+  const err = document.getElementById('regPassError');
+  inp.value = '';
+  err.classList.remove('show');
+  inp.style.borderColor = '';
+  inp.style.boxShadow   = '';
 }
 
 function confirmRegPass() {
   const inp = document.getElementById('regPassInput');
   const err = document.getElementById('regPassError');
   if (inp.value !== '@nt@riks@') {
-    err.style.display = 'block';
-    const dark = (theme === 'dark');
-    inp.style.borderColor = dark ? 'rgba(248,81,73,0.5)' : 'rgba(220,38,38,0.5)';
-    inp.style.boxShadow   = dark ? '0 0 0 4px rgba(248,81,73,0.08)' : '0 0 0 4px rgba(220,38,38,0.08)';
+    err.classList.add('show');
+    inp.style.borderColor = theme==='dark' ? 'rgba(248,81,73,0.5)' : 'rgba(220,38,38,0.5)';
+    inp.style.boxShadow   = theme==='dark' ? '0 0 0 4px rgba(248,81,73,0.08)' : '0 0 0 4px rgba(220,38,38,0.08)';
     inp.value = ''; inp.focus(); return;
   }
-  regModal.style.display = 'none';
+  regModal.classList.remove('open');
   tc.classList.add('expand');
   tl.classList.add('show');
   setTimeout(() => { window.location.href = registerBtn.href; }, 750);
 }
 
-regModal.addEventListener('click', e => { if (e.target===regModal) closeRegModal(); });
+regModal.addEventListener('click', e => { if (e.target === regModal) closeRegModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && regModal.classList.contains('open')) closeRegModal(); });
 </script>
 </body>
 </html>

@@ -987,6 +987,20 @@ function showToast(msg, type = '') {
 }
 
 /* ── Auto scan on load ───────────────────────── */
-window.addEventListener('DOMContentLoaded', () => setTimeout(scanAll, 500));
+window.addEventListener('DOMContentLoaded', () => {
+    // Pastikan modal SELALU tersembunyi saat load
+    const modal = document.getElementById('ping-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        // Restore CSS control setelah frame berikutnya
+        requestAnimationFrame(() => {
+            modal.style.opacity = '';
+            modal.style.pointerEvents = '';
+        });
+    }
+    setTimeout(scanAll, 800); // delay sedikit lebih panjang beri waktu transition app.blade selesai
+});
 </script>
 @endsection
