@@ -509,6 +509,101 @@
     }
     .btn-remove-row:hover { background: #fecaca; }
 
+    /* ── CUSTOM AUTOCOMPLETE DROPDOWN ── */
+    .autocomplete-wrap {
+        position: relative;
+    }
+    .autocomplete-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 1.5px solid #3b82f6;
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(59, 130, 246, 0.08);
+        max-height: 230px;
+        overflow-y: auto;
+        z-index: 100000;
+        display: none;
+        animation: dropDownAnim 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes dropDownAnim {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .autocomplete-dropdown.show {
+        display: block !important;
+    }
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.82rem;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.12s ease;
+    }
+    .autocomplete-item:last-child {
+        border-bottom: none;
+    }
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+        background: #eff6ff;
+    }
+    .autocomplete-item-highlight {
+        color: #2563eb;
+        font-weight: 800;
+        text-decoration: underline;
+    }
+    .autocomplete-badge-code {
+        background: rgba(37, 99, 235, 0.12);
+        color: #1d4ed8;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 0.76rem;
+        padding: 2px 7px;
+        border-radius: 6px;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        flex-shrink: 0;
+    }
+    .autocomplete-toko-name {
+        font-size: 0.80rem;
+        color: #334155;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+    }
+    .autocomplete-barang-name {
+        font-size: 0.82rem;
+        color: #0f172a;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+    .toko-info-tag {
+        margin-top: 5px;
+        font-size: 0.74rem;
+        color: #0369a1;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 3px 8px;
+        border-radius: 6px;
+        display: none;
+        align-items: center;
+        gap: 5px;
+        font-weight: 600;
+    }
+    .toko-info-tag.show {
+        display: flex !important;
+    }
+
     /* Flash Alerts */
     .alert-banner {
         padding: 14px 18px; border-radius: 12px; margin-bottom: 20px;
@@ -846,18 +941,16 @@
                 </div>
 
                 <div class="form-grid-2">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrap">
                         <label>Nama Barang <span class="req">*</span></label>
-                        <input type="text" name="nama_barang" class="form-control" placeholder="Contoh: Printer EPSON TM-T82" required>
+                        <input type="text" name="nama_barang" id="inputTambahNamaBarang" class="form-control" placeholder="Contoh: Printer EPSON TM-T82 / UPS" autocomplete="off" required>
+                        <div id="dropdownTambahNamaBarang" class="autocomplete-dropdown"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrap">
                         <label>Kode Toko (KDTK) <span class="req">*</span></label>
-                        <input type="text" name="kode_toko" list="listToko" class="form-control font-mono" placeholder="Pilih / ketik Kode Toko..." required>
-                        <datalist id="listToko">
-                            @foreach($tokoList as $toko)
-                                <option value="{{ $toko->kode_toko }}">{{ $toko->nama_toko }}</option>
-                            @endforeach
-                        </datalist>
+                        <input type="text" name="kode_toko" id="inputTambahKodeToko" class="form-control font-mono" placeholder="Ketik Kode (TDCN) / Nama Toko..." autocomplete="off" required>
+                        <div id="dropdownTambahKodeToko" class="autocomplete-dropdown"></div>
+                        <div id="previewTambahToko" class="toko-info-tag"></div>
                     </div>
                 </div>
 
@@ -1028,13 +1121,16 @@
                 </div>
 
                 <div class="form-grid-2">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrap">
                         <label>Nama Barang <span class="req">*</span></label>
-                        <input type="text" name="nama_barang" id="editNamaBarang" class="form-control" required>
+                        <input type="text" name="nama_barang" id="editNamaBarang" class="form-control" autocomplete="off" required>
+                        <div id="dropdownEditNamaBarang" class="autocomplete-dropdown"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrap">
                         <label>Kode Toko (KDTK) <span class="req">*</span></label>
-                        <input type="text" name="kode_toko" id="editKodeToko" list="listToko" class="form-control font-mono" required>
+                        <input type="text" name="kode_toko" id="editKodeToko" class="form-control font-mono" autocomplete="off" required>
+                        <div id="dropdownEditKodeToko" class="autocomplete-dropdown"></div>
+                        <div id="previewEditToko" class="toko-info-tag"></div>
                     </div>
                 </div>
 
@@ -1109,6 +1205,279 @@
 <script>
     const MASTER_BARANG = @json($barangList);
     const SERVICES_DATA = @json($services->keyBy('id'));
+    const TOKO_LIST = @json($tokoList);
+    const NAMA_BARANG_SUGGESTIONS = @json($namaBarangList ?? []);
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function highlightMatch(text, query) {
+        if (!query) return escapeHtml(text);
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        return escapeHtml(text).replace(regex, '<span class="autocomplete-item-highlight">$1</span>');
+    }
+
+    function updateTokoPreview(previewId, tokoName) {
+        const el = document.getElementById(previewId);
+        if (!el) return;
+        if (tokoName) {
+            el.innerHTML = `
+                <svg style="width:13px;height:13px;color:#0284c7;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>Toko: <strong>${escapeHtml(tokoName)}</strong></span>
+            `;
+            el.classList.add('show');
+        } else {
+            el.innerHTML = '';
+            el.classList.remove('show');
+        }
+    }
+
+    function setupTokoAutocomplete(inputId, dropdownId, previewId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!input || !dropdown) return;
+
+        let activeIndex = -1;
+
+        function render(query = '') {
+            const q = query.trim().toLowerCase();
+            let matches = [];
+
+            if (!q) {
+                matches = TOKO_LIST.slice(0, 15);
+            } else {
+                matches = TOKO_LIST.filter(t => {
+                    const k = (t.kode_toko || '').toLowerCase();
+                    const n = (t.nama_toko || '').toLowerCase();
+                    return k.includes(q) || n.includes(q);
+                }).sort((a, b) => {
+                    const ka = (a.kode_toko || '').toLowerCase();
+                    const kb = (b.kode_toko || '').toLowerCase();
+                    const na = (a.nama_toko || '').toLowerCase();
+                    const nb = (b.nama_toko || '').toLowerCase();
+                    
+                    if (ka.startsWith(q) && !kb.startsWith(q)) return -1;
+                    if (!ka.startsWith(q) && kb.startsWith(q)) return 1;
+                    if (na.startsWith(q) && !nb.startsWith(q)) return -1;
+                    if (!na.startsWith(q) && nb.startsWith(q)) return 1;
+                    return ka.localeCompare(kb);
+                }).slice(0, 25);
+            }
+
+            if (matches.length === 0) {
+                dropdown.innerHTML = `
+                    <div style="padding:10px 14px; color:#64748b; font-size:0.78rem; text-align:center;">
+                        Tidak ditemukan toko dengan kode/nama "<strong>${escapeHtml(q)}</strong>"
+                    </div>
+                `;
+                dropdown.classList.add('show');
+                activeIndex = -1;
+                return;
+            }
+
+            let html = '';
+            matches.forEach((toko, idx) => {
+                html += `
+                    <div class="autocomplete-item" data-index="${idx}" data-code="${escapeHtml(toko.kode_toko)}" data-name="${escapeHtml(toko.nama_toko)}">
+                        <span class="autocomplete-badge-code">${highlightMatch(toko.kode_toko, q)}</span>
+                        <span class="autocomplete-toko-name">${highlightMatch(toko.nama_toko, q)}</span>
+                    </div>
+                `;
+            });
+
+            dropdown.innerHTML = html;
+            dropdown.classList.add('show');
+            activeIndex = -1;
+
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    const code = this.getAttribute('data-code');
+                    const name = this.getAttribute('data-name');
+                    input.value = code;
+                    updateTokoPreview(previewId, name);
+                    dropdown.classList.remove('show');
+                });
+            });
+        }
+
+        input.addEventListener('input', function() {
+            render(this.value);
+            const val = this.value.trim().toUpperCase();
+            const matched = TOKO_LIST.find(t => (t.kode_toko || '').toUpperCase() === val);
+            if (matched) {
+                updateTokoPreview(previewId, matched.nama_toko);
+            } else {
+                updateTokoPreview(previewId, null);
+            }
+        });
+
+        input.addEventListener('focus', function() {
+            render(this.value);
+        });
+
+        input.addEventListener('blur', function() {
+            setTimeout(() => {
+                dropdown.classList.remove('show');
+            }, 200);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (!dropdown.classList.contains('show') || items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIndex = (activeIndex + 1) % items.length;
+                updateActiveItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIndex = (activeIndex - 1 + items.length) % items.length;
+                updateActiveItem(items);
+            } else if (e.key === 'Enter') {
+                if (activeIndex >= 0 && items[activeIndex]) {
+                    e.preventDefault();
+                    const item = items[activeIndex];
+                    const code = item.getAttribute('data-code');
+                    const name = item.getAttribute('data-name');
+                    input.value = code;
+                    updateTokoPreview(previewId, name);
+                    dropdown.classList.remove('show');
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function updateActiveItem(items) {
+            items.forEach((it, i) => {
+                if (i === activeIndex) {
+                    it.classList.add('active');
+                    it.scrollIntoView({ block: 'nearest' });
+                } else {
+                    it.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    function setupBarangAutocomplete(inputId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!input || !dropdown) return;
+
+        let activeIndex = -1;
+
+        function render(query = '') {
+            const q = query.trim().toLowerCase();
+            let matches = [];
+
+            if (!q) {
+                matches = NAMA_BARANG_SUGGESTIONS.slice(0, 15);
+            } else {
+                matches = NAMA_BARANG_SUGGESTIONS.filter(name => {
+                    return (name || '').toLowerCase().includes(q);
+                }).sort((a, b) => {
+                    const na = a.toLowerCase();
+                    const nb = b.toLowerCase();
+                    if (na.startsWith(q) && !nb.startsWith(q)) return -1;
+                    if (!na.startsWith(q) && nb.startsWith(q)) return 1;
+                    return na.localeCompare(nb);
+                }).slice(0, 20);
+            }
+
+            if (matches.length === 0) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            let html = '';
+            matches.forEach((nama, idx) => {
+                html += `
+                    <div class="autocomplete-item" data-index="${idx}" data-name="${escapeHtml(nama)}">
+                        <div class="autocomplete-barang-name">
+                            <svg style="width:14px;height:14px;color:#3b82f6;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+                            </svg>
+                            <span>${highlightMatch(nama, q)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            dropdown.innerHTML = html;
+            dropdown.classList.add('show');
+            activeIndex = -1;
+
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    const name = this.getAttribute('data-name');
+                    input.value = name;
+                    dropdown.classList.remove('show');
+                });
+            });
+        }
+
+        input.addEventListener('input', function() {
+            render(this.value);
+        });
+
+        input.addEventListener('focus', function() {
+            render(this.value);
+        });
+
+        input.addEventListener('blur', function() {
+            setTimeout(() => {
+                dropdown.classList.remove('show');
+            }, 200);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (!dropdown.classList.contains('show') || items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIndex = (activeIndex + 1) % items.length;
+                updateActiveItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIndex = (activeIndex - 1 + items.length) % items.length;
+                updateActiveItem(items);
+            } else if (e.key === 'Enter') {
+                if (activeIndex >= 0 && items[activeIndex]) {
+                    e.preventDefault();
+                    const item = items[activeIndex];
+                    const name = item.getAttribute('data-name');
+                    input.value = name;
+                    dropdown.classList.remove('show');
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function updateActiveItem(items) {
+            items.forEach((it, i) => {
+                if (i === activeIndex) {
+                    it.classList.add('active');
+                    it.scrollIntoView({ block: 'nearest' });
+                } else {
+                    it.classList.remove('active');
+                }
+            });
+        }
+    }
 
     function openModal(id) {
         const modal = document.getElementById(id);
@@ -1338,6 +1707,17 @@
         document.getElementById('editTindakan').value = row.tindakan || '';
         document.getElementById('editKeterangan').value = row.keterangan || '';
         document.getElementById('formEditService').action = '/service/update/' + row.id;
+
+        // Update preview toko untuk modal edit
+        const curToko = TOKO_LIST.find(t => (t.kode_toko || '').toUpperCase() === (row.kode_toko || '').toUpperCase());
+        if (curToko) {
+            updateTokoPreview('previewEditToko', curToko.nama_toko);
+        } else if (row.toko) {
+            updateTokoPreview('previewEditToko', row.toko.nama_toko);
+        } else {
+            updateTokoPreview('previewEditToko', null);
+        }
+
         openModal('modalEditService');
     }
 
@@ -1351,7 +1731,7 @@
         openModal('modalDeleteService');
     }
 
-    // Close on backdrop click
+    // Close on backdrop click & initialize autocompletes
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.modal-backdrop').forEach(modal => {
             modal.addEventListener('click', function(e) {
@@ -1360,6 +1740,14 @@
                 }
             });
         });
+
+        // Inisialisasi Autocomplete Toko (KDTK & Nama)
+        setupTokoAutocomplete('inputTambahKodeToko', 'dropdownTambahKodeToko', 'previewTambahToko');
+        setupTokoAutocomplete('editKodeToko', 'dropdownEditKodeToko', 'previewEditToko');
+
+        // Inisialisasi Autocomplete Nama Barang
+        setupBarangAutocomplete('inputTambahNamaBarang', 'dropdownTambahNamaBarang');
+        setupBarangAutocomplete('editNamaBarang', 'dropdownEditNamaBarang');
     });
 </script>
 

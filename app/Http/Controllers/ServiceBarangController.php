@@ -55,9 +55,34 @@ class ServiceBarangController extends Controller
         $suplierCount    = ServiceBarang::where('status', 'Service Suplier')->count();
         $selesaiCount    = ServiceBarang::where('status', 'Selesai Service')->count();
 
-        // Data Toko & Barang untuk Form Pilihan
-        $tokoList = Toko::select('id_toko', 'kode_toko', 'nama_toko')->orderBy('nama_toko')->get();
+        // Data Toko & Barang untuk Form Pilihan & Autocomplete
+        $tokoList = Toko::select('id_toko', 'kode_toko', 'nama_toko')
+            ->whereNotNull('kode_toko')
+            ->where('kode_toko', '!=', '')
+            ->orderBy('kode_toko')
+            ->get();
+
         $barangList = Barang::select('id', 'kode_plu', 'nama_barang', 'qty_stock')->orderBy('nama_barang')->get();
+
+        $historyBarang = ServiceBarang::whereNotNull('nama_barang')
+            ->where('nama_barang', '!=', '')
+            ->distinct()
+            ->pluck('nama_barang')
+            ->toArray();
+
+        $masterBarang = Barang::whereNotNull('nama_barang')
+            ->where('nama_barang', '!=', '')
+            ->distinct()
+            ->pluck('nama_barang')
+            ->toArray();
+
+        $namaBarangList = collect(array_merge($historyBarang, $masterBarang))
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->unique(fn($item) => strtolower($item))
+            ->values()
+            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
 
         return view('pages.service', compact(
             'services',
@@ -71,7 +96,8 @@ class ServiceBarangController extends Controller
             'suplierCount',
             'selesaiCount',
             'tokoList',
-            'barangList'
+            'barangList',
+            'namaBarangList'
         ));
     }
 
