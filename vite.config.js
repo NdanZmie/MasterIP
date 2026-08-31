@@ -12,10 +12,10 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '0.0.0.0', // 🔥 penting untuk LAN
+        host: '0.0.0.0',
         port: 5173,
         hmr: {
-            host: '192.168.75.147', // 🔥 IP PC kamu
-        }
+            host: '192.168.75.114',
+        },
     },
 });

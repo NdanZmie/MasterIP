@@ -29,6 +29,11 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
 
+        .hidden { display: none !important; }
+        .flex { display: flex !important; }
+        .fixed { position: fixed !important; }
+        .inset-0 { inset: 0 !important; }
+
         body {
             font-family: 'DM Sans', sans-serif;
             min-height: 100vh;
@@ -868,6 +873,26 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/service" class="{{ request()->is('service*') ? 'active' : '' }}" data-nav>
+                        <span class="nav-fill"></span>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <span>Service</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/part" class="{{ request()->is('part*') ? 'active' : '' }}" data-nav>
+                        <span class="nav-fill"></span>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                        <span>Stok Part</span>
+                    </a>
+                </li>
+                <li>
                     <a href="/data" class="{{ request()->is('data*') ? 'active' : '' }}" data-nav>
                         <span class="nav-fill"></span>
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -966,21 +991,23 @@
                         <span>MONITORING IP</span><span class="ticker-sep">◆</span>
                         <span>MONITORING SPEC</span><span class="ticker-sep">◆</span>
                         <span>NETWORK MONITOR</span><span class="ticker-sep">◆</span>
+                        <span>SERVICE BARANG</span><span class="ticker-sep">◆</span>
+                        <span>STOK PART</span><span class="ticker-sep">◆</span>
                         <span>EDP ACCESS</span><span class="ticker-sep">◆</span>
-                        <span>DATA MANAGEMENT</span><span class="ticker-sep">◆</span>
                         <span>MasterIP</span><span class="ticker-sep">◆</span>
                         <span>MONITORING IP</span><span class="ticker-sep">◆</span>
                         <span>MONITORING SPEC</span><span class="ticker-sep">◆</span>
                         <span>NETWORK MONITOR</span><span class="ticker-sep">◆</span>
+                        <span>SERVICE BARANG</span><span class="ticker-sep">◆</span>
+                        <span>STOK PART</span><span class="ticker-sep">◆</span>
                         <span>EDP ACCESS</span><span class="ticker-sep">◆</span>
-                        <span>DATA MANAGEMENT</span><span class="ticker-sep">◆</span>
                     </div>
                 </div>
 
                 <div class="footer-grid">
                     <div class="footer-brand">
                         <div class="brand-text-footer">MasterIP</div>
-                        <p>Platform manajemen Spec Komputer, Monitoring IP, dan Akses Monitoring EDP terpadu untuk operasional yang lebih efisien.</p>
+                        <p>Platform manajemen Spec Komputer, Monitoring IP, Service Barang, Stok Part, dan Akses Monitoring EDP terpadu untuk operasional yang lebih efisien.</p>
                         <div class="footer-status">
                             <div class="status-item">
                                 <div class="status-dot online"></div>
@@ -996,12 +1023,14 @@
                     <div class="footer-col">
                         <h4>Navigasi</h4>
                         <ul>
+                            <li><a href="/dashboard" data-nav>Dashboard</a></li>
                             <li><a href="/spekpc" data-nav>Spek PC</a></li>
                             <li><a href="/network" data-nav>Network</a></li>
+                            <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
+                            <li><a href="/service" data-nav>Service Barang</a></li>
+                            <li><a href="/part" data-nav>Stok Part</a></li>
                             <li><a href="/data" data-nav>Data All</a></li>
                             <li><a href="/clip" data-nav>Clipboard</a></li>
-                            <li><a href="/dashboard" data-nav>Dashboard</a></li>
-                            <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
                         </ul>
                     </div>
 
