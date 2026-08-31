@@ -64,19 +64,11 @@ class ServiceBarangController extends Controller
 
         $barangList = Barang::select('id', 'kode_plu', 'nama_barang', 'qty_stock')->orderBy('nama_barang')->get();
 
-        $historyBarang = ServiceBarang::whereNotNull('nama_barang')
+        // Riwayat nama unit barang yang pernah diservice (khusus unit service, bukan sparepart)
+        $namaBarangList = ServiceBarang::whereNotNull('nama_barang')
             ->where('nama_barang', '!=', '')
             ->distinct()
             ->pluck('nama_barang')
-            ->toArray();
-
-        $masterBarang = Barang::whereNotNull('nama_barang')
-            ->where('nama_barang', '!=', '')
-            ->distinct()
-            ->pluck('nama_barang')
-            ->toArray();
-
-        $namaBarangList = collect(array_merge($historyBarang, $masterBarang))
             ->map(fn($item) => trim($item))
             ->filter()
             ->unique(fn($item) => strtolower($item))
