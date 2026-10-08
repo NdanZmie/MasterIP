@@ -5,9 +5,7 @@ use App\Models\Datapc;
 use App\Http\Controllers\SpekpcController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\NetworkController;
-use App\Http\Controllers\DashboardController;  // ← TAMBAH
-use App\Http\Controllers\KoneksiTokoController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceBarangController;
 use App\Http\Controllers\BarangController;
 
@@ -86,18 +84,6 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/spekpc/export/excel', [SpekpcController::class, 'exportExcel']);
     Route::get('/spekpc/export/csv',   [SpekpcController::class, 'exportCsv']);
 
-    // ── NETWORK MONITOR ───────────────────────
-    Route::get('/network',       [NetworkController::class, 'index'])->name('network');
-    Route::post('/network/ping', [NetworkController::class, 'ping'])->name('network.ping');
-
-    // ── KONEKSI TOKO ─────────────────────────────────────
-    Route::get('/koneksitoko',              [KoneksiTokoController::class, 'index'])->name('koneksitoko');
-    Route::post('/koneksitoko/store',       [KoneksiTokoController::class, 'store']);
-    Route::post('/koneksitoko/update/{id}', [KoneksiTokoController::class, 'update']);
-    Route::post('/koneksitoko/delete/{id}', [KoneksiTokoController::class, 'destroy']);
-    Route::post('/koneksitoko/ping',        [KoneksiTokoController::class, 'ping'])->name('koneksitoko.ping');
-    Route::get('/koneksitoko/export/excel', [KoneksiTokoController::class, 'exportExcel']);
-
     // ── MONITORING SERVICE BARANG ─────────────────────────
     Route::get('/service',                  [ServiceBarangController::class, 'index'])->name('service.index');
     Route::post('/service/store',           [ServiceBarangController::class, 'store'])->name('service.store');
@@ -107,14 +93,16 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/service/export/excel',     [ServiceBarangController::class, 'exportExcel'])->name('service.export');
 
     // ── MONITORING & MANAJEMEN STOK PART ──────────────────
-    Route::get('/part',                     [BarangController::class, 'index'])->name('part.index');
-    Route::post('/part/store',              [BarangController::class, 'store'])->name('part.store');
-    Route::post('/part/add-stock/{id}',     [BarangController::class, 'addStock'])->name('part.addStock');
-    Route::post('/part/manual-out',         [BarangController::class, 'manualOut'])->name('part.manualOut');
-    Route::post('/part/update/{id}',        [BarangController::class, 'update'])->name('part.update');
-    Route::post('/part/delete/{id}',        [BarangController::class, 'destroy'])->name('part.destroy');
-    Route::get('/part/log',                 [BarangController::class, 'logTransit'])->name('part.log');
-    Route::get('/part/log/export',          [BarangController::class, 'exportLogTransit'])->name('part.log.export');
-    Route::get('/part/api/list',            [BarangController::class, 'apiList'])->name('part.apiList');
+    Route::get('/part',                         [BarangController::class, 'index'])->name('part.index');
+    Route::post('/part/sync',                   [BarangController::class, 'syncGoogleSheet'])->name('part.sync');
+    Route::get('/part/google/test-connection',  [BarangController::class, 'testGoogleConnection'])->name('part.google.test');
+    Route::post('/part/store',                  [BarangController::class, 'store'])->name('part.store');
+    Route::post('/part/add-stock/{id}',         [BarangController::class, 'addStock'])->name('part.addStock');
+    Route::post('/part/manual-out',             [BarangController::class, 'manualOut'])->name('part.manualOut');
+    Route::post('/part/update/{id}',            [BarangController::class, 'update'])->name('part.update');
+    Route::post('/part/delete/{id}',            [BarangController::class, 'destroy'])->name('part.destroy');
+    Route::get('/part/log',                     [BarangController::class, 'logTransit'])->name('part.log');
+    Route::get('/part/log/export',              [BarangController::class, 'exportLogTransit'])->name('part.log.export');
+    Route::get('/part/api/list',                [BarangController::class, 'apiList'])->name('part.apiList');
 
 });

@@ -851,28 +851,6 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/network" class="{{ request()->is('network*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M2 12h20"/>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                        <span>Network</span>
-                        <span class="nav-net-dot"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/koneksitoko" class="{{ request()->is('koneksitoko*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                            <polyline points="9 22 9 12 15 12 15 22"/>
-                        </svg>
-                        <span>Koneksi Toko</span>
-                    </a>
-                </li>
-                <li>
                     <a href="/service" class="{{ request()->is('service*') ? 'active' : '' }}" data-nav>
                         <span class="nav-fill"></span>
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1029,6 +1007,8 @@
                             <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
                             <li><a href="/service" data-nav>Service Barang</a></li>
                             <li><a href="/part" data-nav>Stok Part</a></li>
+                            <li><a href="/onhand-opr" data-nav>Onhand OPR</a></li>
+                            <li><a href="/integrasitelegram" data-nav>Telegram Bot</a></li>
                             <li><a href="/data" data-nav>Data All</a></li>
                             <li><a href="/clip" data-nav>Clipboard</a></li>
                         </ul>

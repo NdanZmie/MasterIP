@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'google_sheets' => [
+        'spreadsheet_id'        => env('GOOGLE_SHEETS_SPREADSHEET_ID', '1l15LkNvLJYNNkfh2CqQn1na1KkFFn-fHgg35OVKMVm0'),
+        'sheet_name'             => env('GOOGLE_SHEETS_SHEET_NAME', 'LPP STOCK (SPAREPART EDP)'),
+        'service_account_json'   => env('GOOGLE_SERVICE_ACCOUNT_JSON', 'google/service-account.json'),
+    ],
+
 ];

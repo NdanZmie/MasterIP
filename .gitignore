@@ -27,3 +27,4 @@ Thumbs.db
 /storage/framework/*
 /storage/logs/*
 /bootstrap/cache/*
+/scratch

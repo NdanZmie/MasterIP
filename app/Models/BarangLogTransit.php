@@ -12,14 +12,27 @@ class BarangLogTransit extends Model
     protected $table = 'barang_log_transit';
 
     protected $fillable = [
+        'no_urut',
         'barang_id',
         'kode_plu',
         'nama_barang',
         'divisi',
         'satuan',
+        'periode',
+        'tgl_datang',
+        'tgl_btb',
+        'no_btb',
+        'tgl_keluar',
+        'tgl_bkb',
+        'no_bkb',
+        'kdtk',
+        'nama_toko',
+        'aktiva',
         'tipe',
         'kategori',
         'qty',
+        'harga_satuan',
+        'total_harga',
         'stok_awal',
         'stok_akhir',
         'tujuan_sumber',
@@ -27,10 +40,23 @@ class BarangLogTransit extends Model
         'pic',
         'keterangan',
         'tanggal_transaksi',
+        'google_sheet_name',
+        'google_sheet_row',
     ];
 
     protected $casts = [
+        'no_urut'           => 'integer',
+        'qty'               => 'integer',
+        'harga_satuan'      => 'decimal:2',
+        'total_harga'       => 'decimal:2',
+        'stok_awal'         => 'integer',
+        'stok_akhir'        => 'integer',
+        'google_sheet_row'  => 'integer',
         'tanggal_transaksi' => 'date',
+        'tgl_datang'        => 'date',
+        'tgl_btb'           => 'date',
+        'tgl_keluar'        => 'date',
+        'tgl_bkb'           => 'date',
     ];
 
     /**

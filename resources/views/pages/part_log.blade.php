@@ -437,7 +437,7 @@
             </div>
             <div class="stat-info">
                 <span class="stat-val">{{ number_format($totalLogs) }}</span>
-                <span class="stat-lbl">Total Catatan Log</span>
+                <span class="stat-lbl">Total Riwayat Log</span>
             </div>
         </div>
 
@@ -448,8 +448,8 @@
                 </svg>
             </div>
             <div class="stat-info">
-                <span class="stat-val">+{{ number_format($totalInQty) }}</span>
-                <span class="stat-lbl">Item Masuk (IN)</span>
+                <span class="stat-val">{{ number_format($totalInLogs) }} <small style="font-size:0.72rem;font-weight:600;color:#047857;">({{ number_format($totalInQty) }} unit)</small></span>
+                <span class="stat-lbl">Barang Masuk (IN)</span>
             </div>
         </div>
 
@@ -460,63 +460,66 @@
                 </svg>
             </div>
             <div class="stat-info">
-                <span class="stat-val">-{{ number_format($totalOutQty) }}</span>
-                <span class="stat-lbl">Item Keluar (OUT)</span>
+                <span class="stat-val">{{ number_format($totalOutLogs) }} <small style="font-size:0.72rem;font-weight:600;color:#b91c1c;">({{ number_format($totalOutQty) }} unit)</small></span>
+                <span class="stat-lbl">Barang Keluar (OUT)</span>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon indigo">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="stat-info">
-                <span class="stat-val">{{ number_format($totalEditLogs ?? 0) }}</span>
-                <span class="stat-lbl">Log Edit / Koreksi</span>
+                <span class="stat-val" style="font-size:1.05rem;">Rp {{ number_format($totalNominalOut / 1000000, 1, ',', '.') }} Jt</span>
+                <span class="stat-lbl">Nilai Pengeluaran Part</span>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon blue">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
             </div>
             <div class="stat-info">
-                <span class="stat-val">{{ number_format($todayLogs) }}</span>
-                <span class="stat-lbl">Transaksi Hari Ini</span>
+                <span class="stat-val">{{ number_format($totalEditLogs) }}</span>
+                <span class="stat-lbl">Log Koreksi / Edit Part</span>
             </div>
         </div>
     </div>
 
-    {{-- Toolbar --}}
+    {{-- Toolbar Filter --}}
     <div class="toolbar-wrap">
         <div class="toolbar-left">
-            {{-- Search Box --}}
-            <form action="{{ route('part.log') }}" method="GET" class="search-box">
-                <input type="hidden" name="tipe" value="{{ $tipe }}">
-                <input type="hidden" name="kategori" value="{{ $kategori }}">
+            {{-- Search Box with Instant Live Search --}}
+            <div class="search-box" style="position:relative;">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                 </svg>
-                <input type="text" name="search" value="{{ $search }}" placeholder="Cari PLU, Barang, Toko, PIC...">
-                <button type="submit">Cari</button>
-            </form>
+                <input type="text" id="liveSearchInputPartLog" name="search" value="{{ $search }}" placeholder="Ketik langsung (PLU, Nama Part, Toko/KDTK, BTB)..." autocomplete="off">
+                <span id="searchResultCountPartLog" style="display:none; font-size:0.68rem; font-weight:700; color:#0284c7; background:#e0f2fe; padding:2px 7px; border-radius:12px; margin-right:4px; white-space:nowrap;"></span>
+                <button type="button" id="btnClearSearchPartLog" style="display:none; background:transparent; border:none; cursor:pointer; color:#94a3b8; font-size:13px; font-weight:bold; padding:0 8px;" title="Hapus pencarian">✕</button>
+            </div>
 
             {{-- Filter Tabs Tipe --}}
             <div class="filter-tabs">
-                <a href="{{ route('part.log', ['tipe' => 'all', 'search' => $search, 'kategori' => $kategori]) }}" class="filter-tab {{ $tipe === 'all' ? 'active' : '' }}">
-                    Semua Log ({{ $totalLogs }})
+                <a href="{{ route('part.log', ['tipe' => 'all', 'kategori' => $kategori, 'search' => $search]) }}"
+                   class="filter-tab {{ $tipe === 'all' ? 'active' : '' }}">
+                    Semua ({{ number_format($totalLogs) }})
                 </a>
-                <a href="{{ route('part.log', ['tipe' => 'IN', 'search' => $search, 'kategori' => $kategori]) }}" class="filter-tab {{ $tipe === 'IN' ? 'active' : '' }}" style="{{ $tipe === 'IN' ? 'color:#047857;' : '' }}">
-                    📥 Masuk (IN)
+                <a href="{{ route('part.log', ['tipe' => 'IN', 'kategori' => $kategori, 'search' => $search]) }}"
+                   class="filter-tab {{ $tipe === 'IN' ? 'active' : '' }}">
+                    Barang Masuk (IN: {{ number_format($totalInLogs) }})
                 </a>
-                <a href="{{ route('part.log', ['tipe' => 'OUT', 'search' => $search, 'kategori' => $kategori]) }}" class="filter-tab {{ $tipe === 'OUT' ? 'active' : '' }}" style="{{ $tipe === 'OUT' ? 'color:#b91c1c;' : '' }}">
-                    📤 Keluar (OUT)
+                <a href="{{ route('part.log', ['tipe' => 'OUT', 'kategori' => $kategori, 'search' => $search]) }}"
+                   class="filter-tab {{ $tipe === 'OUT' ? 'active' : '' }}">
+                    Barang Keluar (OUT: {{ number_format($totalOutLogs) }})
                 </a>
-                <a href="{{ route('part.log', ['tipe' => 'EDIT', 'search' => $search, 'kategori' => $kategori]) }}" class="filter-tab {{ $tipe === 'EDIT' ? 'active' : '' }}" style="{{ $tipe === 'EDIT' ? 'color:#1d4ed8;' : '' }}">
-                    ✏️ Edit / Koreksi ({{ $totalEditLogs ?? 0 }})
+                <a href="{{ route('part.log', ['tipe' => 'EDIT', 'kategori' => $kategori, 'search' => $search]) }}"
+                   class="filter-tab {{ $tipe === 'EDIT' ? 'active' : '' }}">
+                    Edit ({{ number_format($totalEditLogs) }})
                 </a>
             </div>
         </div>
@@ -536,31 +539,40 @@
         <table class="modern-table">
             <thead>
                 <tr>
-                    <th style="width: 32px; text-align: center;">No</th>
-                    <th style="width: 100px;">Tanggal</th>
-                    <th style="width: 140px;">Tipe & Mutasi</th>
-                    <th style="width: 95px;">Kode PLU</th>
+                    <th style="width: 45px; text-align: center;">No</th>
+                    <th style="width: 100px;">Tanggal & Periode</th>
+                    <th style="width: 125px;">Tipe Mutasi</th>
+                    <th style="width: 90px;">Kode PLU</th>
                     <th>Nama Barang / Part</th>
+                    <th>Tujuan / Toko / Dokumen</th>
                     <th style="width: 80px; text-align: right;">Jumlah</th>
-                    <th style="width: 110px; text-align: center;">Perubahan Stok</th>
-                    <th>Tujuan / Sumber Alur</th>
-                    <th style="width: 110px;">PIC</th>
-                    <th>Keterangan / Detail Perubahan</th>
+                    <th style="width: 130px; text-align: right;">Harga & Total (Rp)</th>
+                    <th style="width: 95px;">PIC</th>
+                    <th>Keterangan</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($logs as $index => $log)
-                    <tr>
-                        <td style="color: var(--text-muted); font-weight: 600; text-align: center; font-size: 0.76rem;">
-                            {{ $logs->firstItem() + $index }}
+                    <tr class="part-log-row"
+                        data-plu="{{ strtolower($log->kode_plu ?: '') }}"
+                        data-nama="{{ strtolower($log->nama_barang ?: '') }}"
+                        data-toko="{{ strtolower(($log->kode_toko ?: '') . ' ' . ($log->nama_toko ?: '')) }}"
+                        data-pic="{{ strtolower($log->pic ?: '') }}"
+                        data-ket="{{ strtolower(($log->keterangan ?: '') . ' ' . ($log->no_dokumen_btb ?: '') . ' ' . ($log->no_aktiva ?: '')) }}">
+                        <td style="color: var(--text-muted); font-weight: 700; text-align: center; font-size: 0.74rem;">
+                            {{ $log->no_urut ? '#' . $log->no_urut : ($logs->firstItem() + $index) }}
                         </td>
                         <td>
                             <div class="font-mono" style="font-weight: 700; color: #0f172a; font-size: 0.78rem;">
                                 {{ $log->tanggal_transaksi ? $log->tanggal_transaksi->format('d/m/Y') : '-' }}
                             </div>
-                            <div style="font-size: 0.70rem; color: var(--text-muted);">
-                                {{ $log->created_at ? $log->created_at->format('H:i') : '' }} WIB
-                            </div>
+                            @if($log->periode)
+                                <div style="margin-top: 2px;">
+                                    <span style="font-size:0.67rem; font-weight:800; background:#f1f5f9; color:#475569; padding:1px 5px; border-radius:4px; border:1px solid #e2e8f0;">
+                                        {{ $log->periode }}
+                                    </span>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <div>
@@ -581,16 +593,53 @@
                                     </span>
                                 @endif
                             </div>
-                            <div class="badge-kategori">{{ $log->kategori }}</div>
+                            @if($log->google_sheet_name)
+                                <div style="font-size: 0.67rem; color: #059669; font-weight: 700; margin-top: 2px;">
+                                    Sheet [{{ $log->google_sheet_name }}]: R{{ $log->google_sheet_row }}
+                                </div>
+                            @else
+                                <div class="badge-kategori">{{ $log->kategori }}</div>
+                            @endif
                         </td>
                         <td>
                             <span class="badge-plu">{{ $log->kode_plu ?: '-' }}</span>
                         </td>
                         <td>
-                            <div style="font-weight: 800; color: #0f172a; font-size: 0.84rem;">{{ $log->nama_barang }}</div>
+                            <div style="font-weight: 800; color: #0f172a; font-size: 0.83rem;">{{ $log->nama_barang }}</div>
                             @if($log->divisi)
                                 <div style="margin-top: 2px;">
                                     <span class="badge-divisi">{{ $log->divisi }}</span>
+                                </div>
+                            @endif
+                        </td>
+                        <td>
+                            @if($log->tipe === 'OUT')
+                                @if($log->kdtk || $log->nama_toko)
+                                    <div style="font-size: 0.78rem; font-weight: 700; color: #1e293b;">
+                                        {{ $log->kdtk ? '[' . $log->kdtk . '] ' : '' }}{{ $log->nama_toko }}
+                                    </div>
+                                @else
+                                    <div style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">
+                                        {{ $log->tujuan_sumber ?: '-' }}
+                                    </div>
+                                @endif
+                                @if($log->aktiva)
+                                    <div style="font-size: 0.70rem; color: #2563eb; font-weight: 700; margin-top: 2px;">
+                                        Aktiva/DAT: {{ $log->aktiva }}
+                                    </div>
+                                @endif
+                            @elseif($log->tipe === 'IN')
+                                <div style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">
+                                    {{ $log->tujuan_sumber ?: 'Penerimaan Supplier' }}
+                                </div>
+                                @if($log->no_btb)
+                                    <div style="font-size: 0.70rem; color: #059669; font-weight: 700; margin-top: 2px;">
+                                        No BTB: {{ $log->no_btb }}
+                                    </div>
+                                @endif
+                            @else
+                                <div style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">
+                                    {{ $log->tujuan_sumber ?: 'Edit Data Part' }}
                                 </div>
                             @endif
                         </td>
@@ -613,24 +662,22 @@
                             @endif
                             <span style="font-size: 0.70rem; color: #64748b; font-weight: 600;">{{ $log->satuan ?: 'PCS' }}</span>
                         </td>
-                        <td style="text-align: center; font-size: 0.75rem;">
-                            @php
-                                $stokDiff = $log->stok_akhir - $log->stok_awal;
-                                $stokColor = $stokDiff > 0 ? '#047857' : ($stokDiff < 0 ? '#b91c1c' : '#475569');
-                            @endphp
-                            <div class="font-mono">
-                                <span style="color: #64748b;">{{ $log->stok_awal }}</span>
-                                <span style="color: #94a3b8; margin: 0 3px;">&rarr;</span>
-                                <strong style="color: {{ $stokColor }};">{{ $log->stok_akhir }}</strong>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">
-                                {{ $log->tujuan_sumber ?: '-' }}
-                            </div>
+                        <td style="text-align: right;">
+                            @if($log->total_harga > 0)
+                                <div class="font-mono" style="font-weight: 800; font-size: 0.80rem; color: #0f172a;">
+                                    Rp {{ number_format($log->total_harga, 0, ',', '.') }}
+                                </div>
+                                @if($log->harga_satuan > 0)
+                                    <div class="font-mono" style="font-size: 0.68rem; color: #64748b;">
+                                        @ Rp {{ number_format($log->harga_satuan, 0, ',', '.') }}
+                                    </div>
+                                @endif
+                            @else
+                                <span style="font-size: 0.75rem; color: #94a3b8;">-</span>
+                            @endif
                         </td>
                         <td style="font-size: 0.76rem; color: #475569; font-weight: 600;">
-                            {{ $log->pic ?: 'Teknisi' }}
+                            {{ $log->pic ?: 'Teknisi EDP' }}
                         </td>
                         <td>
                             @php
@@ -670,5 +717,82 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput   = document.getElementById('liveSearchInputPartLog');
+        const clearBtn      = document.getElementById('btnClearSearchPartLog');
+        const resultCountEl = document.getElementById('searchResultCountPartLog');
+        const rows          = document.querySelectorAll('.part-log-row');
+
+        function doLiveSearch() {
+            if (!searchInput) return;
+            const q = (searchInput.value || '').trim().toLowerCase();
+
+            if (clearBtn) {
+                clearBtn.style.display = q ? 'inline-block' : 'none';
+            }
+
+            const words = q.split(/\s+/).filter(w => w.length > 0);
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                if (words.length === 0) {
+                    row.style.display = '';
+                    visibleCount++;
+                    return;
+                }
+
+                const plu    = row.getAttribute('data-plu') || '';
+                const nama   = row.getAttribute('data-nama') || '';
+                const toko   = row.getAttribute('data-toko') || '';
+                const pic    = row.getAttribute('data-pic') || '';
+                const ket    = row.getAttribute('data-ket') || '';
+                const text   = (row.innerText || '').toLowerCase();
+                const combined = `${plu} ${nama} ${toko} ${pic} ${ket} ${text}`;
+
+                const match = words.every(w => combined.includes(w));
+                if (match) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (resultCountEl) {
+                if (words.length > 0) {
+                    resultCountEl.textContent = `${visibleCount} log`;
+                    resultCountEl.style.display = 'inline-block';
+                } else {
+                    resultCountEl.style.display = 'none';
+                }
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    doLiveSearch();
+                }
+            });
+            searchInput.addEventListener('input', doLiveSearch);
+            searchInput.addEventListener('keyup', doLiveSearch);
+            if (searchInput.value.trim()) {
+                doLiveSearch();
+            }
+        }
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.value = '';
+                doLiveSearch();
+                searchInput.focus();
+            });
+        }
+    });
+</script>
 
 @endsection

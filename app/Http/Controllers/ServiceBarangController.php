@@ -181,6 +181,14 @@ class ServiceBarangController extends Controller
                             $barang->qty_stock = $stkAfter;
                             $barang->save();
 
+                            $tglKeluar = $service->tanggal_selesai ?: date('Y-m-d');
+                            $periodeStr = strtoupper(date('My', strtotime($tglKeluar)));
+                            $harga = (float) $barang->harga_satuan;
+                            $total = $qtyUsed * $harga;
+                            $kdtk = $service->kode_toko;
+                            $namaToko = $service->toko ? $service->toko->nama_toko : $kdtk;
+                            $aktiva = $service->no_dat ?: ($service->sn ?: '');
+
                             // Catat ke riwayat part keluar service
                             ServicePartKeluar::create([
                                 'service_barang_id' => $service->id,
@@ -188,26 +196,35 @@ class ServiceBarangController extends Controller
                                 'kode_plu'          => $barang->kode_plu,
                                 'nama_barang'       => $barang->nama_barang,
                                 'qty'               => $qtyUsed,
-                                'tanggal_keluar'    => $service->tanggal_selesai ?: date('Y-m-d'),
+                                'tanggal_keluar'    => $tglKeluar,
                             ]);
 
                             // Catat ke Audit Trail Log Transit Barang (OUT)
-                            \App\Models\BarangLogTransit::create([
+                            $logTransit = \App\Models\BarangLogTransit::create([
                                 'barang_id'         => $barang->id,
                                 'kode_plu'          => $barang->kode_plu,
                                 'nama_barang'       => $barang->nama_barang,
                                 'divisi'            => $barang->divisi,
                                 'satuan'            => $barang->satuan ?: 'PCS',
+                                'periode'           => $periodeStr,
+                                'tgl_keluar'        => $tglKeluar,
+                                'tgl_bkb'           => null,
+                                'kdtk'              => $kdtk,
+                                'nama_toko'         => $namaToko,
+                                'aktiva'            => $aktiva,
                                 'tipe'              => 'OUT',
                                 'kategori'          => 'Service Unit Selesai',
                                 'qty'               => $qtyUsed,
+                                'harga_satuan'      => $harga,
+                                'total_harga'       => $total,
                                 'stok_awal'         => $stkBefore,
                                 'stok_akhir'        => $stkAfter,
-                                'tujuan_sumber'     => "Unit: {$service->nama_barang} (KDTK: {$service->kode_toko})",
+                                'tujuan_sumber'     => "Unit: {$service->nama_barang} (KDTK: {$kdtk} - {$namaToko})",
                                 'referensi_id'      => $service->id,
                                 'pic'               => session('user_name') ?? 'Teknisi Service',
                                 'keterangan'        => "Penggunaan part service unit " . ($service->no_dat ? "DAT: {$service->no_dat}" : "SN: {$service->sn}"),
-                                'tanggal_transaksi' => $service->tanggal_selesai ?: date('Y-m-d'),
+                                'tanggal_transaksi' => $tglKeluar,
+                                'google_sheet_name' => null,
                             ]);
                         }
                     }
