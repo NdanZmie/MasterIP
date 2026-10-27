@@ -593,11 +593,7 @@
                                     </span>
                                 @endif
                             </div>
-                            @if($log->google_sheet_name)
-                                <div style="font-size: 0.67rem; color: #059669; font-weight: 700; margin-top: 2px;">
-                                    Sheet [{{ $log->google_sheet_name }}]: R{{ $log->google_sheet_row }}
-                                </div>
-                            @else
+                            @if($log->kategori)
                                 <div class="badge-kategori">{{ $log->kategori }}</div>
                             @endif
                         </td>

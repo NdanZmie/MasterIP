@@ -60,10 +60,11 @@ class GoogleSheetsService
 
     /**
      * Cek apakah file kredensial Service Account Google Cloud sudah tersedia
+     * (Dinonaktifkan: Seluruh sinkronisasi Google Sheets telah diputuskan)
      */
     public function isConfigured(): bool
     {
-        return file_exists($this->credentialsPath) && is_readable($this->credentialsPath);
+        return false;
     }
 
     /**
@@ -76,32 +77,11 @@ class GoogleSheetsService
 
     /**
      * Inisialisasi Google Sheets Client
+     * (Dinonaktifkan: Tidak ada akses ke Google API)
      */
     public function getService(): ?Sheets
     {
-        if ($this->service !== null) {
-            return $this->service;
-        }
-
-        if (!$this->isConfigured()) {
-            return null;
-        }
-
-        $this->registerAutoloaderFallback();
-
-        try {
-            $this->client = new Client();
-            $this->client->setApplicationName('MasterIP Stock Sync');
-            $this->client->setScopes([Sheets::SPREADSHEETS]);
-            $this->client->setAuthConfig($this->credentialsPath);
-            $this->client->setAccessType('offline');
-
-            $this->service = new Sheets($this->client);
-            return $this->service;
-        } catch (\Exception $e) {
-            Log::error('Google Sheets Client Init Error: ' . $e->getMessage());
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -143,13 +123,10 @@ class GoogleSheetsService
      */
     public function testConnection(): array
     {
-        if (!$this->isConfigured()) {
-            return [
-                'success' => false,
-                'message' => "File service-account.json belum ditemukan di: {$this->credentialsPath}",
-                'help'    => 'Silakan letakkan file service-account.json dari Google Cloud Console ke direktori storage/app/google/service-account.json'
-            ];
-        }
+        return [
+            'success' => false,
+            'message' => 'Integrasi dan sinkronisasi ke Google Sheets telah diputus / dinonaktifkan sepenuhnya.',
+        ];
 
         $clientEmail = $this->getClientEmail();
         $service = $this->getService();

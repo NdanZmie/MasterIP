@@ -23,8 +23,6 @@
     .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
     .part-wrap {
-        min-height: 100vh;
-        padding: 8px 16px 40px;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box;
@@ -159,6 +157,14 @@
         gap: 10px;
         flex-wrap: wrap;
         flex: 1;
+    }
+
+    .toolbar-row-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        border-top: 1px solid rgba(226, 232, 240, 0.6);
+        padding-top: 10px;
     }
 
     /* Search Box */
@@ -324,6 +330,131 @@
         color: #475569;
         border-bottom: 1px solid var(--border);
         white-space: nowrap;
+    }
+    .modern-table th.sortable {
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    .modern-table th.sortable:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+    .modern-table th.sortable.sorted-asc,
+    .modern-table th.sortable.sorted-desc {
+        background: #ecfdf5;
+        color: #059669;
+        border-bottom-color: #10b981;
+    }
+    .th-sort-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .sort-icon {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.72rem;
+        color: #94a3b8;
+        transition: color 0.15s, transform 0.15s;
+    }
+    .sortable.sorted-asc .sort-icon,
+    .sortable.sorted-desc .sort-icon {
+        color: #059669;
+        font-weight: 800;
+    }
+
+    /* ── TAB-TAB PAGINATION CONTAINER (10 Data Per Tab) ── */
+    .table-pagination-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 18px;
+        background: #ffffff;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+    }
+    .pagination-info {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pagination-info strong {
+        color: #0f172a;
+        font-weight: 700;
+    }
+    .per-page-select-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.76rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+    .per-page-select {
+        padding: 5px 9px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #0f172a;
+        background: #f8fafc;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .per-page-select:focus {
+        border-color: #059669;
+    }
+    .tab-pagination-tabs {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .page-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 32px;
+        padding: 0 11px;
+        border-radius: 8px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+    .page-tab-btn:hover:not(:disabled):not(.active) {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+    }
+    .page-tab-btn.active {
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: #ffffff;
+        border-color: #059669;
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.28);
+    }
+    .page-tab-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: #f8fafc;
+    }
+    .page-tab-ellipsis {
+        padding: 0 4px;
+        color: #94a3b8;
+        font-weight: bold;
+        font-size: 0.8rem;
     }
     .modern-table td {
         padding: 10px 12px;
@@ -597,7 +728,7 @@
                 <div>
                     <h1 class="page-title">Monitoring LPP Stock (Sparepart EDP)</h1>
                     <p class="page-subtitle">
-                        Sinkronisasi master data Google Sheets, kontrol buffer, analisis mutasi, dan perencanaan pengadaan (PP)
+                        Monitoring master data stok part, kontrol buffer, analisis mutasi, dan perencanaan pengadaan (PP)
                     </p>
                 </div>
             </div>
@@ -699,6 +830,7 @@
     <div class="toolbar-container">
         {{-- Row 1: Search, Dropdowns, and Action Buttons --}}
         <div class="toolbar-row-top">
+            <div class="toolbar-filters-group">
                 {{-- Search Box with Instant Real-Time Live Search (No submit needed) --}}
                 <div class="search-box" id="searchBoxPartWrap">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -739,30 +871,6 @@
             </div>
 
             <div class="toolbar-actions">
-                {{-- Sync Status / Connection Badge --}}
-                @if($isGoogleConfigured)
-                    <span title="Google Service Account terhubung. Auto write-back ke Google Sheets aktif." style="display:inline-flex; align-items:center; gap:5px; font-size:0.71rem; font-weight:700; color:#047857; background:#ecfdf5; padding:5px 12px; border-radius:50px; border:1px solid #a7f3d0;">
-                        <span style="width:7px; height:7px; border-radius:50%; background:#10b981; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
-                        <span>Auto Write-Back Aktif</span>
-                    </span>
-                @else
-                    <button type="button" onclick="openModal('modalGoogleGuide')" title="Klik untuk melihat panduan menghubungkan Google Sheets API" style="display:inline-flex; align-items:center; gap:5px; font-size:0.71rem; font-weight:700; color:#475569; background:#f1f5f9; padding:5px 12px; border-radius:50px; border:1px solid #cbd5e1; cursor:pointer;">
-                        <svg style="width:12px;height:12px;color:#0284c7;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <span>Setup Auto Write-Back</span>
-                    </button>
-                @endif
-
-                {{-- Sync Google Sheet Button --}}
-                <form action="{{ route('part.sync') }}" method="POST" style="display:inline;" onsubmit="return confirmSync(this);">
-                    @csrf
-                    <button type="submit" class="btn-action-primary btn-sync" id="btnSyncGoogleSheet">
-                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        <span>Tarik dari Google Sheet</span>
-                    </button>
-                </form>
-
                 {{-- Out Barang Manual --}}
                 <button type="button" class="btn-action-primary btn-manual-out" onclick="openModal('modalOutManual')">
                     <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -782,7 +890,7 @@
         </div>
 
         {{-- Row 2: Filter Tabs --}}
-        <div>
+        <div class="toolbar-row-bottom">
             <div class="filter-tabs">
                 <a href="{{ route('part.index', ['status' => 'all', 'search' => $search, 'divisi' => $divisi, 'moving' => $moving]) }}" class="filter-tab {{ $status === 'all' ? 'active' : '' }}">
                     Semua ({{ $totalSku }})
@@ -797,7 +905,7 @@
                     Habis ({{ $habisCount }})
                 </a>
                 <a href="{{ route('part.index', ['status' => 'ada_pp', 'search' => $search, 'divisi' => $divisi, 'moving' => $moving]) }}" class="filter-tab {{ $status === 'ada_pp' ? 'active' : '' }}">
-                    Ada Usulan PP ({{ $items->total() }})
+                    Ada Usulan PP ({{ $ppItemCount ?? $items->total() }})
                 </a>
                 <a href="{{ route('part.index', ['status' => 'pp_pending', 'search' => $search, 'divisi' => $divisi, 'moving' => $moving]) }}" class="filter-tab {{ $status === 'pp_pending' ? 'active' : '' }}">
                     PP Pending ({{ $ppPendingCount }})
@@ -811,16 +919,36 @@
         <table class="modern-table">
             <thead>
                 <tr>
-                    <th style="width: 36px; text-align: center;">No</th>
-                    <th style="width: 80px;">PLU</th>
-                    <th>Nama Sparepart / Barang</th>
-                    <th style="width: 100px;">Divisi</th>
-                    <th style="width: 100px;">Moving</th>
-                    <th style="width: 95px; text-align: right;">Stok Fisik</th>
-                    <th style="width: 85px; text-align: center;">PKM / DSI</th>
-                    <th style="width: 130px;">Usulan PP</th>
-                    <th style="width: 105px; text-align: right;">Harga Satuan</th>
-                    <th>Keterangan / Status</th>
+                    <th class="sortable" data-sort="no" style="width: 48px; text-align: center;" title="Klik untuk mengurutkan nomor">
+                        <span class="th-sort-wrap" style="justify-content: center;">No <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="plu" style="width: 85px;" title="Klik untuk mengurutkan PLU">
+                        <span class="th-sort-wrap">PLU <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="nama" title="Klik untuk mengurutkan Nama Part">
+                        <span class="th-sort-wrap">Nama Sparepart / Barang <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="divisi" style="width: 100px;" title="Klik untuk mengurutkan Divisi">
+                        <span class="th-sort-wrap">Divisi <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="moving" style="width: 105px;" title="Klik untuk mengurutkan Moving status">
+                        <span class="th-sort-wrap">Moving <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="stock" style="width: 105px; text-align: right;" title="Klik untuk mengurutkan Stok Fisik">
+                        <span class="th-sort-wrap" style="justify-content: flex-end;">Stok Fisik <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="pkm" style="width: 90px; text-align: center;" title="Klik untuk mengurutkan PKM">
+                        <span class="th-sort-wrap" style="justify-content: center;">PKM / DSI <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="pp" style="width: 130px;" title="Klik untuk mengurutkan Usulan PP">
+                        <span class="th-sort-wrap">Usulan PP <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="harga" style="width: 110px; text-align: right;" title="Klik untuk mengurutkan Harga Satuan">
+                        <span class="th-sort-wrap" style="justify-content: flex-end;">Harga Satuan <span class="sort-icon">↕</span></span>
+                    </th>
+                    <th class="sortable" data-sort="ket" title="Klik untuk mengurutkan Keterangan">
+                        <span class="th-sort-wrap">Keterangan / Status <span class="sort-icon">↕</span></span>
+                    </th>
                     <th style="width: 80px; text-align: center;">Aksi</th>
                 </tr>
             </thead>
@@ -839,10 +967,16 @@
                         elseif ($mov === 'KIRIM HO') $badgeClass = 'ho';
                     @endphp
                     <tr class="part-row"
+                        data-no="{{ $item->no_urut ?: ($index + 1) }}"
                         data-plu="{{ strtolower($item->kode_plu ?? '') }}"
                         data-nama="{{ strtolower($item->nama_barang ?? '') }}"
                         data-divisi="{{ strtolower($item->divisi ?? '') }}"
                         data-moving="{{ strtolower($item->moving ?? '') }}"
+                        data-stock="{{ (float) $item->qty_stock }}"
+                        data-pkm="{{ (float) ($item->pkm ?? 0) }}"
+                        data-dsi="{{ (float) ($item->dsi ?? 0) }}"
+                        data-pp="{{ (float) ($item->qty_pp ?? 0) }}"
+                        data-harga="{{ (float) ($item->harga_satuan ?? 0) }}"
                         data-ket="{{ strtolower(($item->keterangan ?? '') . ' ' . ($item->keterangan_khusus ?? '')) }}">
                         <td style="color: var(--text-muted); font-weight: 600; text-align: center; font-size: 0.74rem;">
                             {{ $item->no_urut ?: ($items->firstItem() + $index) }}
@@ -970,11 +1104,27 @@
             </tbody>
         </table>
 
-        @if($items->hasPages())
-            <div style="padding: 14px 18px; border-top: 1px solid var(--border);">
-                {{ $items->links() }}
+        {{-- Interactive Tab-Tab Pagination Bar (10 data per tab) --}}
+        <div class="table-pagination-bar" id="partTablePaginationBar">
+            <div class="pagination-info" id="paginationInfoText">
+                Menampilkan <strong>1 - 10</strong> dari <strong>{{ $items->total() }}</strong> part
             </div>
-        @endif
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                <div class="per-page-select-wrap">
+                    <span>Tampilkan:</span>
+                    <select id="rowsPerPageSelect" class="per-page-select">
+                        <option value="10" selected>10 per tab</option>
+                        <option value="25">25 per tab</option>
+                        <option value="50">50 per tab</option>
+                        <option value="100">100 per tab</option>
+                        <option value="-1">Semua</option>
+                    </select>
+                </div>
+                <div class="tab-pagination-tabs" id="tabPaginationContainer">
+                    {{-- Dynamically populated tab buttons --}}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1344,110 +1494,6 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════ --}}
-{{-- MODAL GOOGLE SHEETS SETUP & DIAGNOSTIK LIVE (TAHAP 2)    --}}
-{{-- ══════════════════════════════════════════════════════════ --}}
-<div class="modal-backdrop" id="modalGoogleGuide">
-    <div class="modal-box" style="max-width: 650px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:34px; height:34px; border-radius:10px; background:rgba(16, 185, 129, 0.2); display:flex; align-items:center; justify-content:center; color:#34d399;">
-                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 style="margin:0; font-size:1.0rem; font-weight:800; color:#fff;">Integrasi Google Sheets (Tahap 2)</h3>
-                    <p style="margin:2px 0 0; font-size:0.72rem; color:#94a3b8;">Two-Way Synchronization & Live Write-Back API</p>
-                </div>
-            </div>
-            <button type="button" class="modal-close" onclick="closeModal('modalGoogleGuide')" style="color:#94a3b8;">
-                <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-
-        <div class="modal-body" style="padding: 18px 22px;">
-            {{-- Status Banner --}}
-            <div style="background: {{ $isGoogleConfigured ? '#ecfdf5' : '#f8fafc' }}; border: 1px solid {{ $isGoogleConfigured ? '#a7f3d0' : '#e2e8f0' }}; border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 12px;">
-                <div style="width: 28px; height: 28px; border-radius: 8px; background: {{ $isGoogleConfigured ? '#10b981' : '#64748b' }}; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
-                    @if($isGoogleConfigured)
-                        <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    @else
-                        <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    @endif
-                </div>
-                <div style="flex:1;">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: {{ $isGoogleConfigured ? '#065f46' : '#1e293b' }};">
-                        {{ $isGoogleConfigured ? 'Google Service Account Terpasang' : 'Kredensial Service Account Belum Terpasang' }}
-                    </div>
-                    <div style="font-size: 0.74rem; color: {{ $isGoogleConfigured ? '#047857' : '#64748b' }}; margin-top: 2px; line-height: 1.4;">
-                        {{ $isGoogleConfigured 
-                            ? 'Setiap penambahan stok, edit data, dan pengeluaran manual otomatis tersinkronisasi ke Google Sheets secara real-time.' 
-                            : 'Sistem saat ini menggunakan database MySQL lokal dan sinkronisasi tarik (pull) CSV. Pasang file Service Account JSON untuk mengaktifkan write-back otomatis.' }}
-                    </div>
-                </div>
-            </div>
-
-            {{-- 4 Langkah Setup Cepat --}}
-            <div style="font-size: 0.78rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                <span>Panduan Langkah Pemasangan:</span>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
-                <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 0.77rem;">
-                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.70rem; flex-shrink: 0;">1</div>
-                    <div style="color: #334155; line-height: 1.4;">
-                        Buka <a href="https://console.cloud.google.com/" target="_blank" style="color: #2563eb; font-weight: 700; text-decoration: underline;">Google Cloud Console</a>, buat project baru, lalu aktifkan API <strong>"Google Sheets API"</strong>.
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 0.77rem;">
-                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.70rem; flex-shrink: 0;">2</div>
-                    <div style="color: #334155; line-height: 1.4;">
-                        Masuk menu <strong>IAM & Admin ➔ Service Accounts</strong>, buat service account, lalu masuk tab <strong>Keys ➔ Add Key ➔ Create new key (JSON)</strong>.
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 0.77rem;">
-                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.70rem; flex-shrink: 0;">3</div>
-                    <div style="color: #334155; line-height: 1.4;">
-                        Simpan dan letakkan file JSON tersebut di folder proyek:
-                        <div style="background: #f1f5f9; padding: 5px 8px; border-radius: 6px; font-family: monospace; font-size: 0.72rem; color: #0f172a; margin-top: 4px; border: 1px solid #cbd5e1; word-break: break-all;">
-                            storage/app/google/service-account.json
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 0.77rem;">
-                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.70rem; flex-shrink: 0;">4</div>
-                    <div style="color: #334155; line-height: 1.4;">
-                        Buka file <a href="https://docs.google.com/spreadsheets/d/1l15LkNvLJYNNkfh2CqQn1na1KkFFn-fHgg35OVKMVm0" target="_blank" style="color: #2563eb; font-weight: 700; text-decoration: underline;">Google Sheets Monitoring EDP</a>, klik tombol <strong>Share / Bagikan</strong>, dan undang email Service Account tersebut dengan hak akses <strong>Editor</strong>.
-                    </div>
-                </div>
-            </div>
-
-            {{-- Live Test Diagnostic Box --}}
-            <div style="border-top: 1px dashed #cbd5e1; padding-top: 14px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-size: 0.78rem; font-weight: 800; color: #0f172a;">Live API Diagnostic:</span>
-                    <button type="button" onclick="runGoogleDiagnostic()" id="btnRunDiagnostic" style="background: #0f172a; color: #fff; border: none; padding: 5px 12px; border-radius: 7px; font-size: 0.73rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.2s;">
-                        <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span>Uji Koneksi Sekarang</span>
-                    </button>
-                </div>
-                <div id="diagnosticOutput" style="background: #0f172a; color: #e2e8f0; font-family: monospace; font-size: 0.73rem; padding: 10px 12px; border-radius: 8px; min-height: 50px; max-height: 150px; overflow-y: auto; line-height: 1.4;">
-                    <span style="color: #94a3b8;">Klik "Uji Koneksi Sekarang" untuk memeriksa status komunikasi langsung ke Google API...</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 10px 20px;">
-            <button type="button" class="btn-cancel" onclick="closeModal('modalGoogleGuide')">Tutup</button>
-        </div>
-    </div>
-</div>
 
 <script>
     function openModal(id) {
@@ -1459,76 +1505,6 @@
         if (m) m.classList.remove('show');
     }
 
-    function runGoogleDiagnostic() {
-        const out = document.getElementById('diagnosticOutput');
-        const btn = document.getElementById('btnRunDiagnostic');
-        
-        btn.disabled = true;
-        btn.innerHTML = `
-            <svg class="animate-spin" style="width:13px;height:13px;animation:spin 1s linear infinite;" fill="none" viewBox="0 0 24 24">
-                <circle style="opacity:0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path style="opacity:0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            <span>Memeriksa...</span>
-        `;
-        out.innerHTML = '<span style="color:#38bdf8;">⏳ Menguji komunikasi ke Google Sheets API & kredensial...</span>';
-
-        fetch('{{ route("part.google.test") }}')
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = `
-                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Uji Koneksi Sekarang</span>
-                `;
-
-                if (data.success) {
-                    out.innerHTML = `
-                        <div style="color:#4ade80; font-weight:bold;">✅ KONEKSI BERHASIL TERHUBUNG!</div>
-                        <div style="color:#e2e8f0; margin-top:4px;">• Judul Spreadsheet : ${data.spreadsheet_title || '-'}</div>
-                        <div style="color:#e2e8f0;">• Sheet Name        : ${data.sheet_name || '-'}</div>
-                        <div style="color:#e2e8f0;">• Service Account   : ${data.client_email || '-'}</div>
-                        <div style="color:#e2e8f0;">• Sampel Data Read  : ${data.sample_count || 0} baris terverifikasi</div>
-                        <div style="color:#34d399; margin-top:4px; font-weight:bold;">Sistem siap sinkronisasi 2 arah secara real-time!</div>
-                    `;
-                } else {
-                    let solHtml = data.solution ? `<div style="color:#fde047; margin-top:4px;">💡 Solusi: ${data.solution}</div>` : '';
-                    let emailHtml = data.client_email ? `<div style="color:#94a3b8;">Email Service Account: ${data.client_email}</div>` : '';
-                    out.innerHTML = `
-                        <div style="color:#f87171; font-weight:bold;">❌ KONEKSI GAGAL:</div>
-                        <div style="color:#fca5a5; margin-top:2px;">${data.message}</div>
-                        ${emailHtml}
-                        ${solHtml}
-                    `;
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = `
-                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Uji Koneksi Sekarang</span>
-                `;
-                out.innerHTML = `<div style="color:#f87171;">❌ Terjadi kesalahan jaringan / server: ${err.message}</div>`;
-            });
-    }
-
-    function confirmSync(form) {
-        if (confirm("Apakah Anda yakin ingin menyinkronkan data stok dari Google Sheets?")) {
-            const btn = document.getElementById('btnSyncGoogleSheet');
-            if (btn) {
-                btn.innerHTML = `
-                    <svg class="animate-spin" style="width:14px;height:14px;animation:spin 1s linear infinite;" fill="none" viewBox="0 0 24 24">
-                        <circle style="opacity:0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path style="opacity:0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <span>Sinkronisasi...</span>
-                `;
-                btn.disabled = true;
-            }
-            return true;
-        }
-        return false;
-    }
 
     function triggerRestockModal(btn) {
         const id = btn.getAttribute('data-id');
@@ -1609,14 +1585,212 @@
             });
         });
 
-        // ── INSTANT LIVE SEARCH LPP STOCK (REAL-TIME AS YOU TYPE) ──
-        const searchInput   = document.getElementById('liveSearchInputPart');
-        const clearBtn      = document.getElementById('btnClearSearchPart');
-        const resultCountEl = document.getElementById('searchResultCountPart');
-        const rows          = document.querySelectorAll('.part-row');
-        const noResults     = document.getElementById('noResultsRowPart');
-        const queryText     = document.getElementById('searchQueryTextPart');
+        // ── TABLE ENGINE: SORTING, TAB-TAB PAGINATION (10 PER TAB), & LIVE SEARCH ──
+        const searchInput    = document.getElementById('liveSearchInputPart');
+        const clearBtn       = document.getElementById('btnClearSearchPart');
+        const resultCountEl  = document.getElementById('searchResultCountPart');
+        const allRows        = Array.from(document.querySelectorAll('.part-row'));
+        const noResults      = document.getElementById('noResultsRowPart');
+        const queryText      = document.getElementById('searchQueryTextPart');
+        const perPageSelect  = document.getElementById('rowsPerPageSelect');
+        const tableContainer = document.querySelector('.table-container');
 
+        let currentPage    = 1;
+        let rowsPerPage    = 10; // Default 10 rows per tab/table
+        let currentSortKey = 'no';
+        let currentSortDir = 'asc';
+        let visibleRows    = [...allRows];
+
+        // Sort function
+        function sortRows(key, dir) {
+            visibleRows.sort((a, b) => {
+                let valA = a.getAttribute('data-' + key) || '';
+                let valB = b.getAttribute('data-' + key) || '';
+
+                const numKeys = ['no', 'stock', 'pkm', 'dsi', 'pp', 'harga'];
+                if (numKeys.includes(key)) {
+                    valA = parseFloat(valA) || 0;
+                    valB = parseFloat(valB) || 0;
+                    return dir === 'asc' ? valA - valB : valB - valA;
+                }
+
+                return dir === 'asc'
+                    ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
+                    : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            // Re-order rows in DOM tbody
+            const tbody = document.querySelector('.modern-table tbody');
+            if (tbody) {
+                visibleRows.forEach(row => tbody.appendChild(row));
+                if (noResults) tbody.appendChild(noResults);
+            }
+        }
+
+        // Render current 10 rows and tab pagination
+        function renderTable(shouldScroll = false) {
+            const total = visibleRows.length;
+            const totalPages = rowsPerPage === -1 ? 1 : (Math.ceil(total / rowsPerPage) || 1);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIdx = (currentPage - 1) * (rowsPerPage === -1 ? total : rowsPerPage);
+            const endIdx   = rowsPerPage === -1 ? total : startIdx + rowsPerPage;
+
+            allRows.forEach(row => { row.style.display = 'none'; });
+
+            visibleRows.forEach((row, idx) => {
+                if (idx >= startIdx && idx < endIdx) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update Info Text
+            const infoEl = document.getElementById('paginationInfoText');
+            if (infoEl) {
+                if (total === 0) {
+                    infoEl.innerHTML = 'Tidak ada part yang ditampilkan';
+                } else {
+                    const dispStart = startIdx + 1;
+                    const dispEnd   = Math.min(endIdx, total);
+                    infoEl.innerHTML = `Menampilkan <strong>${dispStart} - ${dispEnd}</strong> dari <strong>${total}</strong> part`;
+                }
+            }
+
+            renderTabs(totalPages);
+
+            if (shouldScroll && tableContainer) {
+                const rect = tableContainer.getBoundingClientRect();
+                if (rect.top < 0) {
+                    tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function renderTabs(totalPages) {
+            const container = document.getElementById('tabPaginationContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPages <= 1) {
+                const tabBtn = document.createElement('button');
+                tabBtn.type = 'button';
+                tabBtn.className = 'page-tab-btn active';
+                tabBtn.textContent = 'Tab 1';
+                container.appendChild(tabBtn);
+                return;
+            }
+
+            // Prev Button
+            const prevBtn = document.createElement('button');
+            prevBtn.type = 'button';
+            prevBtn.className = 'page-tab-btn';
+            prevBtn.innerHTML = '‹ Prev';
+            prevBtn.title = 'Halaman Sebelumnya';
+            prevBtn.disabled = (currentPage === 1);
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable(true);
+                }
+            };
+            container.appendChild(prevBtn);
+
+            function addTab(p) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-tab-btn' + (p === currentPage ? ' active' : '');
+                btn.textContent = 'Tab ' + p;
+                btn.onclick = () => {
+                    currentPage = p;
+                    renderTable(true);
+                };
+                container.appendChild(btn);
+            }
+
+            function addEllipsis() {
+                const span = document.createElement('span');
+                span.className = 'page-tab-ellipsis';
+                span.textContent = '...';
+                container.appendChild(span);
+            }
+
+            if (totalPages <= 8) {
+                for (let i = 1; i <= totalPages; i++) {
+                    addTab(i);
+                }
+            } else {
+                addTab(1);
+                if (currentPage > 3) addEllipsis();
+
+                const start = Math.max(2, currentPage - 1);
+                const end   = Math.min(totalPages - 1, currentPage + 1);
+
+                for (let i = start; i <= end; i++) {
+                    addTab(i);
+                }
+
+                if (currentPage < totalPages - 2) addEllipsis();
+                addTab(totalPages);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.type = 'button';
+            nextBtn.className = 'page-tab-btn';
+            nextBtn.innerHTML = 'Next ›';
+            nextBtn.title = 'Halaman Selanjutnya';
+            nextBtn.disabled = (currentPage === totalPages);
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable(true);
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        // Column Sort Click Handler
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.addEventListener('click', function() {
+                const key = this.getAttribute('data-sort');
+                if (currentSortKey === key) {
+                    currentSortDir = (currentSortDir === 'asc' ? 'desc' : 'asc');
+                } else {
+                    currentSortKey = key;
+                    currentSortDir = (['stock', 'harga', 'pp', 'pkm'].includes(key) ? 'desc' : 'asc');
+                }
+
+                document.querySelectorAll('th.sortable').forEach(otherTh => {
+                    otherTh.classList.remove('sorted-asc', 'sorted-desc');
+                    const icon = otherTh.querySelector('.sort-icon');
+                    if (icon) icon.textContent = '↕';
+                });
+
+                this.classList.add(currentSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                const activeIcon = this.querySelector('.sort-icon');
+                if (activeIcon) {
+                    activeIcon.textContent = (currentSortDir === 'asc' ? '▲' : '▼');
+                }
+
+                currentPage = 1;
+                sortRows(currentSortKey, currentSortDir);
+                renderTable();
+            });
+        });
+
+        // Rows per page selector
+        if (perPageSelect) {
+            perPageSelect.addEventListener('change', function() {
+                rowsPerPage = parseInt(this.value, 10);
+                currentPage = 1;
+                renderTable();
+            });
+        }
+
+        // Live Search Handler
         function doLiveSearch() {
             if (!searchInput) return;
             const q = (searchInput.value || '').trim().toLowerCase();
@@ -1626,38 +1800,22 @@
             }
 
             const words = q.split(/\s+/).filter(w => w.length > 0);
-            let visibleCount = 0;
 
-            rows.forEach(row => {
-                if (words.length === 0) {
-                    row.style.display = '';
-                    visibleCount++;
-                    return;
-                }
-
+            visibleRows = allRows.filter(row => {
+                if (words.length === 0) return true;
                 const plu    = row.getAttribute('data-plu') || '';
                 const nama   = row.getAttribute('data-nama') || '';
                 const divisi = row.getAttribute('data-divisi') || '';
                 const moving = row.getAttribute('data-moving') || '';
                 const ket    = row.getAttribute('data-ket') || '';
                 const text   = (row.innerText || '').toLowerCase();
-
                 const combined = `${plu} ${nama} ${divisi} ${moving} ${ket} ${text}`;
-
-                // Check if all search words match (multi-word support)
-                const match = words.every(w => combined.includes(w));
-
-                if (match) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
+                return words.every(w => combined.includes(w));
             });
 
             if (resultCountEl) {
                 if (words.length > 0) {
-                    resultCountEl.textContent = `${visibleCount} item`;
+                    resultCountEl.textContent = `${visibleRows.length} item`;
                     resultCountEl.style.display = 'inline-block';
                 } else {
                     resultCountEl.style.display = 'none';
@@ -1665,13 +1823,17 @@
             }
 
             if (noResults) {
-                if (visibleCount === 0 && words.length > 0) {
+                if (visibleRows.length === 0 && words.length > 0) {
                     noResults.style.display = '';
                     if (queryText) queryText.innerText = searchInput.value;
                 } else {
                     noResults.style.display = 'none';
                 }
             }
+
+            currentPage = 1;
+            sortRows(currentSortKey, currentSortDir);
+            renderTable();
         }
 
         if (searchInput) {
@@ -1696,6 +1858,10 @@
                 searchInput.focus();
             });
         }
+
+        // Initial setup: Default sorted by No (asc) & 10 rows per tab
+        sortRows(currentSortKey, currentSortDir);
+        renderTable();
     });
 </script>
 

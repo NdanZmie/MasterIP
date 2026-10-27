@@ -60,7 +60,7 @@ class BarangController extends Controller
             $query->orderBy('no_urut', 'asc');
         }
 
-        $items = $query->paginate(200)->withQueryString();
+        $items = $query->paginate(500)->withQueryString();
 
         // Statistik Keseluruhan
         $totalSku         = Barang::count();
@@ -71,6 +71,7 @@ class BarangController extends Controller
         $totalPpQty       = (int) Barang::sum('qty_pp');
         $totalPpNominal   = (float) Barang::sum('total_harga');
         $ppPendingCount   = Barang::where('qty_pp_belum_realisasi', '>', 0)->count();
+        $ppItemCount      = Barang::where('qty_pp', '>', 0)->count();
         $lastSyncedAt     = Barang::max('last_synced_at');
 
         // Daftar Toko untuk Datalist Out Manual
@@ -78,7 +79,7 @@ class BarangController extends Controller
         $divisiList = Barang::whereNotNull('divisi')->where('divisi', '!=', '')->distinct()->orderBy('divisi')->pluck('divisi');
         $movingList = Barang::whereNotNull('moving')->where('moving', '!=', '')->distinct()->orderBy('moving')->pluck('moving');
         $allParts           = Barang::orderBy('nama_barang', 'asc')->get();
-        $isGoogleConfigured = app(\App\Services\GoogleSheetsService::class)->isConfigured();
+        $isGoogleConfigured = false;
 
         return view('pages.part', compact(
             'items',
@@ -96,6 +97,7 @@ class BarangController extends Controller
             'totalPpQty',
             'totalPpNominal',
             'ppPendingCount',
+            'ppItemCount',
             'lastSyncedAt',
             'isGoogleConfigured',
             'tokoList',
@@ -106,177 +108,13 @@ class BarangController extends Controller
     }
 
     /**
-     * Sinkronisasi data dari Google Sheets (Pull)
+     * Sinkronisasi data dari Google Sheets (Dinonaktifkan)
      */
     public function syncGoogleSheet(Request $request)
     {
-        try {
-            $csvUrl = "https://docs.google.com/spreadsheets/d/1l15LkNvLJYNNkfh2CqQn1na1KkFFn-fHgg35OVKMVm0/export?format=csv&gid=750496266";
-            
-            $csvData = null;
-            try {
-                $response = Http::timeout(15)->get($csvUrl);
-                if ($response->successful()) {
-                    $csvData = $response->body();
-                }
-            } catch (\Exception $e) {
-                // Fallback ke file local jika gagal koneksi internet
-            }
-
-            if (!$csvData) {
-                $fallbackPath = database_path('seeders/data/lpp_stock.csv');
-                if (file_exists($fallbackPath)) {
-                    $csvData = file_get_contents($fallbackPath);
-                }
-            }
-
-            if (!$csvData) {
-                return redirect()->back()->with('error', 'Gagal mengunduh data Google Sheet dan tidak ditemukan file lokal.');
-            }
-
-            $lines = explode("\n", $csvData);
-            $months = [
-                ['key' => '2024-07', 'name' => "JUL '24", 'col_in' => 12, 'col_out' => 13, 'col_akh' => 14],
-                ['key' => '2024-08', 'name' => "AUG '24", 'col_in' => 15, 'col_out' => 16, 'col_akh' => 17],
-                ['key' => '2024-09', 'name' => "SEP '24", 'col_in' => 18, 'col_out' => 19, 'col_akh' => 20],
-                ['key' => '2024-10', 'name' => "OCT '24", 'col_in' => 21, 'col_out' => 22, 'col_akh' => 23],
-                ['key' => '2024-11', 'name' => "NOV '24", 'col_in' => 24, 'col_out' => 25, 'col_akh' => 26],
-                ['key' => '2024-12', 'name' => "DES '24", 'col_in' => 27, 'col_out' => 28, 'col_akh' => 29],
-                ['key' => '2025-01', 'name' => "JAN '25", 'col_in' => 30, 'col_out' => 31, 'col_akh' => 32],
-                ['key' => '2025-02', 'name' => "FEB '25", 'col_in' => 33, 'col_out' => 34, 'col_akh' => 35],
-                ['key' => '2025-03', 'name' => "MAR '25", 'col_in' => 36, 'col_out' => 37, 'col_akh' => 38],
-                ['key' => '2025-04', 'name' => "APR '25", 'col_in' => 39, 'col_out' => 40, 'col_akh' => 41],
-                ['key' => '2025-05', 'name' => "MEI '25", 'col_in' => 42, 'col_out' => 43, 'col_akh' => 44],
-                ['key' => '2025-06', 'name' => "JUN '25", 'col_in' => 45, 'col_out' => 46, 'col_akh' => 47],
-                ['key' => '2025-07', 'name' => "JUL '25", 'col_in' => 48, 'col_out' => 49, 'col_akh' => 50],
-                ['key' => '2025-08', 'name' => "AUG '25", 'col_in' => 51, 'col_out' => 52, 'col_akh' => 53],
-                ['key' => '2025-09', 'name' => "SEP '25", 'col_in' => 54, 'col_out' => 55, 'col_akh' => 56],
-                ['key' => '2025-10', 'name' => "OKT '25", 'col_in' => 57, 'col_out' => 58, 'col_akh' => 59],
-                ['key' => '2025-11', 'name' => "NOV '25", 'col_in' => 60, 'col_out' => 61, 'col_akh' => 62],
-                ['key' => '2025-12', 'name' => "DES '25", 'col_in' => 63, 'col_out' => 64, 'col_akh' => 65],
-                ['key' => '2026-01', 'name' => "JAN '26", 'col_in' => 66, 'col_out' => 67, 'col_akh' => 68],
-                ['key' => '2026-02', 'name' => "FEB '26", 'col_in' => 69, 'col_out' => 70, 'col_akh' => 71],
-                ['key' => '2026-03', 'name' => "MAR '26", 'col_in' => 72, 'col_out' => 73, 'col_akh' => 74],
-                ['key' => '2026-04', 'name' => "APR '26", 'col_in' => 75, 'col_out' => 76, 'col_akh' => 77],
-                ['key' => '2026-05', 'name' => "MEI '26", 'col_in' => 78, 'col_out' => 79, 'col_akh' => 80],
-                ['key' => '2026-06', 'name' => "JUNI '26", 'col_in' => 81, 'col_out' => 82, 'col_akh' => 83],
-                ['key' => '2026-07', 'name' => "JULI '26", 'col_in' => 84, 'col_out' => 85, 'col_akh' => 86],
-                ['key' => '2026-08', 'name' => "AGUSTUS '26", 'col_in' => 87, 'col_out' => 88, 'col_akh' => 89],
-                ['key' => '2026-09', 'name' => "SEPTEMBER '26", 'col_in' => 90, 'col_out' => 91, 'col_akh' => 92],
-            ];
-
-            DB::beginTransaction();
-
-            $syncedCount = 0;
-            $rowIndex = 0;
-
-            foreach ($lines as $line) {
-                $rowIndex++;
-                if ($rowIndex <= 8) continue;
-
-                $row = str_getcsv($line);
-                $no = trim($row[0] ?? '');
-                if (!is_numeric($no)) continue;
-
-                $plu        = trim($row[1] ?? '');
-                $namaBarang = trim($row[2] ?? '');
-                $divisi     = trim($row[3] ?? '');
-                $satuan     = trim($row[4] ?? 'PCS') ?: 'PCS';
-                $moving     = trim($row[5] ?? '');
-                $pkm        = (int) self::cleanNumber($row[6] ?? 0);
-                $kebPerToko = (float) self::cleanNumber($row[7] ?? 0);
-                $totalToko  = (int) self::cleanNumber($row[8] ?? 254);
-                $kriteria   = trim($row[9] ?? '');
-                $saldoAwal  = (int) self::cleanNumber($row[10] ?? 0);
-
-                $saldoAkhir = (int) self::cleanNumber($row[92] ?? 0);
-                $avgL3mOut  = (float) self::cleanNumber($row[93] ?? 0);
-                $dsi        = (int) self::cleanNumber($row[94] ?? 0);
-                $leadTime   = (int) self::cleanNumber($row[95] ?? 45) ?: 45;
-                $minor      = (int) self::cleanNumber($row[96] ?? 0);
-                $reorder    = (int) self::cleanNumber($row[97] ?? 0);
-                $qtyPp      = (int) self::cleanNumber($row[98] ?? 0);
-                $buffer     = (int) self::cleanNumber($row[99] ?? 0);
-                $ketKhusus  = trim($row[100] ?? '');
-                $hargaSatuan= self::cleanCurrency($row[101] ?? 0);
-                $totalHarga = self::cleanCurrency($row[102] ?? 0);
-                $qtyPpPending = (int) self::cleanNumber($row[103] ?? 0);
-                $keterangan = trim($row[104] ?? '');
-
-                // Cari barang berdasarkan PLU atau nama_barang
-                $barang = Barang::where('kode_plu', $plu)->where('kode_plu', '!=', '')->first();
-                if (!$barang) {
-                    $barang = Barang::where('nama_barang', $namaBarang)->first();
-                }
-
-                $dataPayload = [
-                    'no_urut'                => (int) $no,
-                    'kode_plu'               => $plu,
-                    'nama_barang'            => $namaBarang,
-                    'divisi'                 => $divisi,
-                    'satuan'                 => $satuan,
-                    'moving'                 => $moving,
-                    'pkm'                    => $pkm,
-                    'keb_per_toko'           => $kebPerToko,
-                    'total_toko'             => $totalToko ?: 254,
-                    'kriteria_buffer'        => $kriteria,
-                    'saldo_awal'             => $saldoAwal,
-                    'qty_stock'              => $saldoAkhir,
-                    'avg_l3m_out'            => $avgL3mOut,
-                    'dsi'                    => $dsi,
-                    'lead_time'              => $leadTime,
-                    'minor'                  => $minor,
-                    'reorder'                => $reorder,
-                    'qty_pp'                 => $qtyPp,
-                    'buffer'                 => $buffer,
-                    'keterangan_khusus'      => $ketKhusus,
-                    'harga_satuan'           => $hargaSatuan,
-                    'total_harga'            => $totalHarga,
-                    'qty_pp_belum_realisasi' => $qtyPpPending,
-                    'keterangan'             => $keterangan,
-                    'google_sheet_row'       => $rowIndex,
-                    'last_synced_at'         => now(),
-                ];
-
-                if ($barang) {
-                    $barang->update($dataPayload);
-                } else {
-                    $barang = Barang::create($dataPayload);
-                }
-
-                // Update riwayat mutasi bulanan
-                BarangMutasiBulanan::where('barang_id', $barang->id)->delete();
-                $mutasiBatch = [];
-                foreach ($months as $idx => $m) {
-                    $qtyIn  = (int) self::cleanNumber($row[$m['col_in']] ?? 0);
-                    $qtyOut = (int) self::cleanNumber($row[$m['col_out']] ?? 0);
-                    $salAkh = (int) self::cleanNumber($row[$m['col_akh']] ?? 0);
-
-                    $mutasiBatch[] = [
-                        'barang_id'    => $barang->id,
-                        'kode_plu'     => $plu,
-                        'periode_key'  => $m['key'],
-                        'nama_bulan'   => $m['name'],
-                        'urutan'       => $idx + 1,
-                        'qty_in'       => $qtyIn,
-                        'qty_out'      => $qtyOut,
-                        'saldo_akhir'  => $salAkh,
-                        'created_at'   => now(),
-                        'updated_at'   => now(),
-                    ];
-                }
-                BarangMutasiBulanan::insert($mutasiBatch);
-
-                $syncedCount++;
-            }
-
-            DB::commit();
-            return redirect()->route('part.index')->with('success', "Sinkronisasi berhasil! {$syncedCount} data sparepart diperbarui dari Google Sheets.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal melakukan sinkronisasi: ' . $e->getMessage());
-        }
+        return redirect()->route('part.index')->with('info', 'Fitur sinkronisasi ke Google Sheets telah diputuskan / dinonaktifkan.');
     }
+
 
     /**
      * Tambah data part / barang baru
@@ -408,49 +246,12 @@ class BarangController extends Controller
                 'pic'               => session('user_name') ?? 'Teknisi EDP',
                 'keterangan'        => $request->catatan ? trim($request->catatan) : ($request->sumber ?: 'Penambahan kuantitas stok part'),
                 'tanggal_transaksi' => $tglDatang,
-                'google_sheet_name' => 'IN',
+                'google_sheet_name' => null,
             ]);
 
             DB::commit();
 
-            // Auto Write-back ke Google Sheets (Sheet 5 LPP STOCK & Sheet 6 IN)
-            $sheetMsg = '';
-            try {
-                $sheetsService = app(\App\Services\GoogleSheetsService::class);
-                if ($sheetsService->isConfigured()) {
-                    // 1. Update Saldo Akhir di Sheet LPP STOCK
-                    $syncLpp = $sheetsService->syncBarangToSheet($barang);
-                    
-                    // 2. Append transaksi ke Sheet 6 [IN]
-                    $appendIn = $sheetsService->appendBarangMasuk([
-                        'kode_plu'     => $barang->kode_plu,
-                        'nama_barang'  => $barang->nama_barang,
-                        'tgl_datang'   => $tglDatang,
-                        'tgl_btb'      => $tglBtb,
-                        'periode'      => $periodeStr,
-                        'divisi'       => $barang->divisi ?: 'CPU',
-                        'satuan'       => $barang->satuan ?: 'PCS',
-                        'no_btb'       => $noBtb ?: '-',
-                        'qty'          => $qtyAdd,
-                        'harga_satuan' => $harga,
-                        'total_harga'  => $total,
-                        'keterangan'   => $request->catatan ?: ($request->sumber ?: '')
-                    ]);
-
-                    if (!empty($appendIn['inserted_row'])) {
-                        $log->update([
-                            'no_urut'          => $appendIn['no_urut'] ?? null,
-                            'google_sheet_row' => $appendIn['inserted_row'],
-                        ]);
-                    }
-
-                    $sheetMsg = " | Google Sheets: LPP Stock & Sheet [IN] terupdate otomatis";
-                }
-            } catch (\Exception $ex) {
-                Log::error("Google Sheets Write-back error on addStock: " . $ex->getMessage());
-            }
-
-            return redirect()->route('part.index')->with('success', "Stok untuk \"{$barang->nama_barang}\" berhasil ditambah +{$qtyAdd} (Total Stok: {$qtyAfter} {$barang->satuan}){$sheetMsg}.");
+            return redirect()->route('part.index')->with('success', "Stok untuk \"{$barang->nama_barang}\" berhasil ditambah +{$qtyAdd} (Total Stok: {$qtyAfter} {$barang->satuan}).");
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menambah stok: ' . $e->getMessage());
@@ -690,23 +491,7 @@ class BarangController extends Controller
 
             DB::commit();
 
-            // Auto Write-back ke Google Sheets (jika configured)
-            $sheetMsg = '';
-            try {
-                $sheetsService = app(\App\Services\GoogleSheetsService::class);
-                if ($sheetsService->isConfigured()) {
-                    $sync = $sheetsService->syncBarangToSheet($barang, [
-                        'pkm'        => $newPkm,
-                        'qty_pp'     => $newQtyPp,
-                        'keterangan' => $barang->keterangan,
-                    ]);
-                    $sheetMsg = " | " . $sync['message'];
-                }
-            } catch (\Exception $ex) {
-                // Fallback aman
-            }
-
-            return redirect()->route('part.index')->with('success', "Data part \"{$barang->nama_barang}\" berhasil diperbarui{$sheetMsg}.");
+            return redirect()->route('part.index')->with('success', "Data part \"{$barang->nama_barang}\" berhasil diperbarui.");
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data part: ' . $e->getMessage());
@@ -845,10 +630,10 @@ class BarangController extends Controller
         $callback = function () use ($logs) {
             $file = fopen('php://output', 'w');
             fputcsv($file, [
-                'ID Log', 'No Urut Sheet', 'Tanggal Transaksi', 'Periode', 'Tipe', 'Kategori Mutasi', 'Kode PLU',
+                'ID Log', 'No Urut', 'Tanggal Transaksi', 'Periode', 'Tipe', 'Kategori Mutasi', 'Kode PLU',
                 'Nama Barang', 'Divisi', 'Satuan', 'Qty', 'Harga Satuan', 'Total Harga', 'Stok Awal', 'Stok Akhir',
                 'No BTB', 'Tgl Datang/BTB', 'KDTK', 'Nama Toko', 'No Aktiva/DAT', 'Tgl Keluar/BKB',
-                'Tujuan / Sumber', 'PIC', 'Google Sheet Info', 'Keterangan'
+                'Tujuan / Sumber', 'PIC', 'Referensi', 'Keterangan'
             ]);
 
             foreach ($logs as $log) {
@@ -876,7 +661,7 @@ class BarangController extends Controller
                     $log->tgl_keluar ? $log->tgl_keluar->format('d/m/Y') : '-',
                     $log->tujuan_sumber ?: '-',
                     $log->pic ?: '-',
-                    $log->google_sheet_name ? ($log->google_sheet_name . ($log->google_sheet_row ? " (Row: {$log->google_sheet_row})" : '')) : '-',
+                    '-',
                     $log->keterangan ?: '-',
                 ]);
             }
@@ -910,13 +695,23 @@ class BarangController extends Controller
     }
 
     /**
-     * Endpoint uji koneksi ke Google Sheets API
+     * Endpoint uji koneksi ke Google Sheets API (Dinonaktifkan)
      */
     public function testGoogleConnection(Request $request)
     {
-        $service = app(\App\Services\GoogleSheetsService::class);
-        $result = $service->testConnection();
-        return response()->json($result);
+        return response()->json([
+            'success' => false,
+            'message' => 'Integrasi Google Sheets telah diputus / dinonaktifkan sepenuhnya.'
+        ]);
+    }
+
+    /**
+     * Hapus / Kosongkan semua Log Transit
+     */
+    public function clearLog()
+    {
+        BarangLogTransit::truncate();
+        return redirect()->route('part.log')->with('success', 'Semua log transit berhasil dikosongkan.');
     }
 
     private static function cleanNumber($val): float

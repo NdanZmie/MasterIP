@@ -1133,43 +1133,7 @@
         });
     }
 
-    /* ─── STAGGERED PAGE-IN ─── */
-    function staggerIn() {
-        const items = document.querySelectorAll(
-            'main > *:not(.nm-modal-overlay):not(.kt-modal-overlay):not([id$="-modal"])'
-        );
-        items.forEach((el, i) => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(18px)';
-            el.style.transition = `opacity 0.42s ease ${0.04 + i * 0.06}s, transform 0.42s cubic-bezier(0.23,1,0.32,1) ${0.04 + i * 0.06}s`;
-        });
-        setTimeout(() => {
-            items.forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
-        }, 60);
-    }
-    window.addEventListener('load', staggerIn);
 
-    /* ─── INTERSECTION OBSERVER ─── */
-    const revealObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                revealObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.10, rootMargin: '0px 0px -30px 0px' });
-
-    setTimeout(() => {
-        document.querySelectorAll('.card, .glass-card, [data-reveal], table, .stat-box').forEach(el => {
-            if (!el.style.opacity || el.style.opacity === '1') {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(16px)';
-                el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.23,1,0.32,1)';
-            }
-            revealObserver.observe(el);
-        });
-    }, 500);
 
     /* ─── TOAST SYSTEM ─── */
     window.MasterIPToast = function(message, type = 'info', duration = 3500) {

@@ -94,8 +94,6 @@ Route::middleware('auth.session')->group(function () {
 
     // ── MONITORING & MANAJEMEN STOK PART ──────────────────
     Route::get('/part',                         [BarangController::class, 'index'])->name('part.index');
-    Route::post('/part/sync',                   [BarangController::class, 'syncGoogleSheet'])->name('part.sync');
-    Route::get('/part/google/test-connection',  [BarangController::class, 'testGoogleConnection'])->name('part.google.test');
     Route::post('/part/store',                  [BarangController::class, 'store'])->name('part.store');
     Route::post('/part/add-stock/{id}',         [BarangController::class, 'addStock'])->name('part.addStock');
     Route::post('/part/manual-out',             [BarangController::class, 'manualOut'])->name('part.manualOut');
