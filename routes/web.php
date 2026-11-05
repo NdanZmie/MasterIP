@@ -8,6 +8,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceBarangController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\SuratJalanController;
 
 //
 // =======================
@@ -102,5 +103,13 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/part/log',                     [BarangController::class, 'logTransit'])->name('part.log');
     Route::get('/part/log/export',              [BarangController::class, 'exportLogTransit'])->name('part.log.export');
     Route::get('/part/api/list',                [BarangController::class, 'apiList'])->name('part.apiList');
+
+    // ── SURAT JALAN / SJ ──────────────────────────────────
+    Route::get('/surat-jalan',              [SuratJalanController::class, 'index'])->name('surat_jalan.index');
+    Route::get('/sj',                       fn() => redirect()->route('surat_jalan.index'));
+    Route::post('/surat-jalan/store',       [SuratJalanController::class, 'store'])->name('surat_jalan.store');
+    Route::get('/surat-jalan/show/{id}',    [SuratJalanController::class, 'show'])->name('surat_jalan.show');
+    Route::get('/surat-jalan/print/{id}',   [SuratJalanController::class, 'print'])->name('surat_jalan.print');
+    Route::post('/surat-jalan/delete/{id}', [SuratJalanController::class, 'destroy'])->name('surat_jalan.destroy');
 
 });

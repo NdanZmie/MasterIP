@@ -39,6 +39,12 @@ class LoginController extends Controller
         // Catatan: jika password di DB sudah di-hash pakai bcrypt, gunakan Hash::check()
         // Jika plain text, gunakan perbandingan langsung seperti di bawah
         if (!$user || $user->Password !== $request->Password) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'NIK atau Password salah. Silakan coba lagi.',
+                ], 422);
+            }
             return back()
                 ->withInput(['NIK' => $request->NIK])
                 ->with('error', 'NIK atau Password salah. Silakan coba lagi.');
@@ -50,6 +56,16 @@ class LoginController extends Controller
             'user_nik'  => $user->NIK,
             'user_nama' => $user->Nama,
         ]);
+        session()->flash('just_logged_in', true);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Selamat datang, ' . $user->Nama . '!',
+                'redirect' => route('dashboard'),
+                'user'     => $user->Nama,
+            ]);
+        }
 
         return redirect('/dashboard')->with('success', 'Selamat datang, ' . $user->Nama . '!');
     }

@@ -27,7 +27,11 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+            overflow-y: auto !important;
+            height: auto !important;
+        }
 
         .hidden { display: none !important; }
         .flex { display: flex !important; }
@@ -39,6 +43,7 @@
             min-height: 100vh;
             background: url('{{ asset('aset/bgwhite.jpg') }}') center/cover no-repeat fixed;
             overflow-x: hidden;
+            overflow-y: auto !important;
         }
 
         /* ═══════════════════════════════════════════
@@ -882,6 +887,15 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/surat-jalan" class="{{ request()->is('surat-jalan*') || request()->is('sj*') ? 'active' : '' }}" data-nav>
+                        <span class="nav-fill"></span>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>SJ / SURAT JALAN</span>
+                    </a>
+                </li>
+                <li>
                     <a href="/clip" class="{{ request()->is('clip*') ? 'active' : '' }}" data-nav>
                         <span class="nav-fill"></span>
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1010,6 +1024,7 @@
                             <li><a href="/onhand-opr" data-nav>Onhand OPR</a></li>
                             <li><a href="/integrasitelegram" data-nav>Telegram Bot</a></li>
                             <li><a href="/data" data-nav>Data All</a></li>
+                            <li><a href="/surat-jalan" data-nav>SJ / SURAT JALAN</a></li>
                             <li><a href="/clip" data-nav>Clipboard</a></li>
                         </ul>
                     </div>
@@ -1153,7 +1168,37 @@
         }, duration);
     };
 
-    if (!sessionStorage.getItem('master_welcomed')) {
+    /* ─── SPECIAL LOGIN TO DASHBOARD GSAP TRANSITION ─── */
+    const justLoggedIn = sessionStorage.getItem('just_logged_in') === '1' || {{ session('just_logged_in') ? 'true' : 'false' }};
+    const loggedUserName = sessionStorage.getItem('logged_user_nama') || '{{ session('user_nama', 'User') }}';
+
+    function playDashboardEntrance() {
+        if (!window.gsap) return;
+        window.gsap.fromTo('#navbar',
+            { y: -80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' }
+        );
+        const dashElements = document.querySelectorAll('.db-nav-control-bar, .db-container > *, .metric-card, .db-card');
+        if (dashElements.length > 0) {
+            window.gsap.fromTo(dashElements,
+                { y: 35, opacity: 0, scale: 0.97 },
+                { y: 0, opacity: 1, scale: 1, duration: 0.7, stagger: 0.07, ease: 'back.out(1.2)', delay: 0.12 }
+            );
+        }
+        setTimeout(() => {
+            window.MasterIPToast(`Otorisasi Berhasil! Selamat datang di Dashboard, ${loggedUserName} 🚀`, 'ok', 4000);
+        }, 500);
+    }
+
+    if (justLoggedIn) {
+        sessionStorage.removeItem('just_logged_in');
+        sessionStorage.setItem('master_welcomed', '1');
+        if (window.gsap) {
+            playDashboardEntrance();
+        } else {
+            window.addEventListener('load', playDashboardEntrance);
+        }
+    } else if (!sessionStorage.getItem('master_welcomed')) {
         setTimeout(() => {
             window.MasterIPToast('Selamat datang di MasterIP 👋', 'ok', 3000);
             sessionStorage.setItem('master_welcomed', '1');
