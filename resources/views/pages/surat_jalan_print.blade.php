@@ -90,7 +90,7 @@
         .page-sheet {
             width: 210mm;
             min-height: 297mm;
-            margin: 60px auto 0;
+            margin: 40px auto 60px;
             background: #ffffff;
             box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             padding: 14mm 16mm 16mm 16mm;

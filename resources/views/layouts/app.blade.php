@@ -216,6 +216,7 @@
             border-radius: var(--radius-nav);
             padding: 8px 16px;
             display: flex; align-items: center; justify-content: space-between;
+            gap: 10px;
             box-shadow:
                 0 8px 40px rgba(15,23,42,0.10),
                 0 2px 8px rgba(59,130,246,0.06),
@@ -335,9 +336,22 @@
             50%     { transform: translateY(-7px) scale(1.06); box-shadow: 0 4px 14px rgba(59,130,246,0.5); }
         }
 
+        /* Nav Menu Wrap (Center Container with graceful scroll) */
+        .nav-menu-wrap {
+            display: flex; align-items: center; justify-content: center;
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .nav-menu-wrap::-webkit-scrollbar { display: none; }
+
         /* Nav links */
         .nav-links {
             display: flex; align-items: center; gap: 2px; list-style: none;
+            flex-shrink: 0;
         }
         .nav-links a {
             position: relative;
@@ -348,6 +362,14 @@
             transition: color 0.2s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
             white-space: nowrap; overflow: hidden;
             isolation: isolate;
+        }
+        .nav-text-short { display: none; }
+
+        /* Nav User Actions (Right Container - Pinned & Never Cut Off) */
+        .nav-user-actions {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
         }
         .nav-links a svg {
             width: 15px; height: 15px; flex-shrink: 0;
@@ -696,9 +718,9 @@
             display: flex; align-items: center; justify-content: space-between;
             flex-wrap: wrap; gap: 12px;
         }
-        .footer-bottom span { font-size: 0.74rem; color: #334155; }
+        .footer-bottom span { font-size: 0.74rem; color: #94a3b8; }
         .footer-by {
-            font-size: 0.74rem; color: #334155;
+            font-size: 0.74rem; color: #94a3b8;
             display: flex; align-items: center; gap: 8px;
         }
         .footer-by strong {
@@ -724,7 +746,7 @@
         .footer-heartbeat {
             display: flex; align-items: center; gap: 10px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem; color: #1e3a5f;
+            font-size: 0.65rem; color: #64748b;
         }
         .hb-line {
             display: flex; align-items: center; gap: 0;
@@ -775,19 +797,55 @@
         .toast-icon svg  { width: 14px; height: 14px; }
 
         /* ═══════════════════════════════════════════
-           RESPONSIVE
+           RESPONSIVE & ZOOM ADAPTATIONS
         ═══════════════════════════════════════════ */
-        @media (max-width: 768px) {
-            .nav-inner  { margin: 8px 10px; padding: 7px 12px; }
-            .nav-links  { gap: 0; }
+        /* Zoom 110% / Laptop 1366px Screens (<= 1440px) */
+        @media (max-width: 1440px) {
+            .nav-inner { margin: 8px 14px; padding: 6px 12px; gap: 8px; }
+            .nav-links a { padding: 6px 9px; font-size: 0.81rem; gap: 5px; }
+            .nav-links a svg { width: 14px; height: 14px; }
+            .nav-text-full { display: none; }
+            .nav-text-short { display: inline; }
+            .user-role { display: none; }
+            .user-chip { padding: 3px 10px 3px 3px; gap: 6px; }
+            .nav-logout { padding: 6px 11px; font-size: 0.81rem; }
+        }
+
+        /* Zoom 125% / Laptops <= 1260px */
+        @media (max-width: 1260px) {
+            .nav-inner { margin: 6px 10px; padding: 6px 10px; gap: 6px; }
+            .nav-links a { padding: 5px 7px; font-size: 0.78rem; gap: 4px; }
+            .brand-text { font-size: 1.05rem; }
+            .nav-logout span { display: none; }
+            .nav-logout { padding: 6px 9px; }
+            .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; gap: 28px; }
+        }
+
+        /* Screens <= 1080px */
+        @media (max-width: 1080px) {
             .nav-links a span { display: none; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links a { padding: 7px 9px; }
+            .brand-badge { display: none; }
+            .user-name { display: none; }
+            .user-chip { padding: 0; background: transparent; border: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
             .footer-brand { grid-column: 1 / -1; }
         }
-        @media (max-width: 480px) {
-            .user-name, .user-role { display: none; }
+
+        /* Screens <= 768px (Mobile & Tablet) */
+        @media (max-width: 768px) {
+            .nav-inner  { margin: 6px 8px; padding: 5px 8px; }
+            .nav-links  { gap: 0; }
+            .nav-links a span { display: none; }
             .nav-divider { display: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+            .footer-brand { grid-column: 1 / -1; }
+        }
+
+        /* Screens <= 520px */
+        @media (max-width: 520px) {
             .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { justify-content: center; text-align: center; }
         }
     </style>
 </head>
@@ -834,106 +892,116 @@
                 <span class="brand-badge">BETA</span>
             </a>
 
-            <ul class="nav-links">
-                <li>
-                    <a href="/dashboard" class="{{ request()->is('dashboard*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                        </svg>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/spekpc" class="{{ request()->is('spekpc*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <rect x="2" y="3" width="20" height="14" rx="2"/>
-                            <path d="M8 21h8M12 17v4"/>
-                        </svg>
-                        <span>Spek PC</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/service" class="{{ request()->is('service*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                        </svg>
-                        <span>Service</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/part" class="{{ request()->is('part*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                            <line x1="12" y1="22.08" x2="12" y2="12"/>
-                        </svg>
-                        <span>Stok Part</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/data" class="{{ request()->is('data*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                        </svg>
-                        <span>Data</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/surat-jalan" class="{{ request()->is('surat-jalan*') || request()->is('sj*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span>SJ / SURAT JALAN</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/clip" class="{{ request()->is('clip*') ? 'active' : '' }}" data-nav>
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-                        </svg>
-                        <span>Clipboard</span>
-                    </a>
-                </li>
+            {{-- Nav Links (Center Container) --}}
+            <div class="nav-menu-wrap">
+                <ul class="nav-links">
+                    <li>
+                        <a href="/dashboard" class="{{ request()->is('dashboard*') ? 'active' : '' }}" data-nav title="Dashboard">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/spekpc" class="{{ request()->is('spekpc*') ? 'active' : '' }}" data-nav title="Spek PC">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 21h8M12 17v4"/>
+                            </svg>
+                            <span>Spek PC</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/service" class="{{ request()->is('service*') ? 'active' : '' }}" data-nav title="Service">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                            <span>Service</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/part" class="{{ request()->is('part*') ? 'active' : '' }}" data-nav title="Stok Part">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                            <span>Stok Part</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/data" class="{{ request()->is('data*') ? 'active' : '' }}" data-nav title="Data">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                            </svg>
+                            <span>Data</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/surat-jalan" class="{{ request()->is('surat-jalan*') || request()->is('sj*') ? 'active' : '' }}" data-nav title="Surat Jalan">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="nav-text-full">SJ / SURAT JALAN</span>
+                            <span class="nav-text-short">SJ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/tampung" class="{{ request()->is('tampung*') ? 'active' : '' }}" data-nav title="Tampung Program">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            <span>Tampung</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/clip" class="{{ request()->is('clip*') ? 'active' : '' }}" data-nav title="Clipboard">
+                            <span class="nav-fill"></span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                            </svg>
+                            <span>Clipboard</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                <li><div class="nav-divider"></div></li>
-
-                <li>
-                    <div class="user-chip">
-                        <div class="user-avatar">
-                            {{ strtoupper(substr(session('user_nama', 'U'), 0, 2)) }}
-                        </div>
-                        <div>
-                            <div class="user-name">{{ session('user_nama', 'User') }}</div>
-                            <div class="user-role">{{ session('user_nik', '-') }}</div>
-                        </div>
+            {{-- User Actions & Logout (Right Container - Always Pinned) --}}
+            <div class="nav-user-actions">
+                <div class="user-chip" title="{{ session('user_nama', 'User') }} ({{ session('user_nik', '-') }})">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(session('user_nama', 'U'), 0, 2)) }}
                     </div>
-                </li>
+                    <div class="user-info-text">
+                        <div class="user-name">{{ session('user_nama', 'User') }}</div>
+                        <div class="user-role">{{ session('user_nik', '-') }}</div>
+                    </div>
+                </div>
 
-                <li><div class="nav-divider"></div></li>
+                <div class="nav-divider"></div>
 
-                <li>
-                    <a href="/logout" class="nav-logout" id="logout-link">
-                        <span class="nav-fill"></span>
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
+                <a href="/logout" class="nav-logout" id="logout-link" title="Logout dari Sistem">
+                    <span class="nav-fill"></span>
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    <span>Logout</span>
+                </a>
+            </div>
         </div>
     </header>
 
@@ -1025,6 +1093,7 @@
                             <li><a href="/integrasitelegram" data-nav>Telegram Bot</a></li>
                             <li><a href="/data" data-nav>Data All</a></li>
                             <li><a href="/surat-jalan" data-nav>SJ / SURAT JALAN</a></li>
+                            <li><a href="/tampung" data-nav>Tampung Program</a></li>
                             <li><a href="/clip" data-nav>Clipboard</a></li>
                         </ul>
                     </div>

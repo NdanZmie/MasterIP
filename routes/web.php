@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceBarangController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\SuratJalanController;
+use App\Http\Controllers\TampungController;
 
 //
 // =======================
@@ -111,5 +112,12 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/surat-jalan/show/{id}',    [SuratJalanController::class, 'show'])->name('surat_jalan.show');
     Route::get('/surat-jalan/print/{id}',   [SuratJalanController::class, 'print'])->name('surat_jalan.print');
     Route::post('/surat-jalan/delete/{id}', [SuratJalanController::class, 'destroy'])->name('surat_jalan.destroy');
+
+    // ── TAMPUNG (PENAMPUNG PROGRAM & REPOSITORI APLIKASI) ──
+    Route::get('/tampung',               [TampungController::class, 'index'])->name('tampung.index');
+    Route::post('/tampung/store',        [TampungController::class, 'store'])->name('tampung.store');
+    Route::get('/tampung/download/{id}', [TampungController::class, 'download'])->name('tampung.download');
+    Route::post('/tampung/update/{id}',  [TampungController::class, 'update'])->name('tampung.update');
+    Route::post('/tampung/delete/{id}',  [TampungController::class, 'destroy'])->name('tampung.destroy');
 
 });
