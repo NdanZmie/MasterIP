@@ -994,18 +994,6 @@
                     </div>
 
                     <div class="footer-col">
-                        <h4>Navigasi</h4>
-                        <ul>
-                            <li><a href="/spekpc" data-nav>Spek PC</a></li>
-                            <li><a href="/network" data-nav>Network</a></li>
-                            <li><a href="/data" data-nav>Data All</a></li>
-                            <li><a href="/clip" data-nav>Clipboard</a></li>
-                            <li><a href="/dashboard" data-nav>Dashboard</a></li>
-                            <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col">
                         <h4>Sistem</h4>
                         <ul>
                             <li><a href="#">Export Excel</a></li>

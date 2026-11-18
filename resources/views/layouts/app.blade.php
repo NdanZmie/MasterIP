@@ -624,7 +624,7 @@
         /* Main footer grid */
         .footer-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 2.5fr 1fr;
             gap: 48px; margin-bottom: 48px;
         }
 
@@ -818,7 +818,7 @@
             .brand-text { font-size: 1.05rem; }
             .nav-logout span { display: none; }
             .nav-logout { padding: 6px 9px; }
-            .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; gap: 28px; }
+            .footer-grid { grid-template-columns: 2fr 1fr; gap: 28px; }
         }
 
         /* Screens <= 1080px */
@@ -828,8 +828,7 @@
             .brand-badge { display: none; }
             .user-name { display: none; }
             .user-chip { padding: 0; background: transparent; border: none; }
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
-            .footer-brand { grid-column: 1 / -1; }
+            .footer-grid { grid-template-columns: 2fr 1fr; gap: 24px; }
         }
 
         /* Screens <= 768px (Mobile & Tablet) */
@@ -838,8 +837,7 @@
             .nav-links  { gap: 0; }
             .nav-links a span { display: none; }
             .nav-divider { display: none; }
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-            .footer-brand { grid-column: 1 / -1; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
         }
 
         /* Screens <= 520px */
@@ -1081,28 +1079,10 @@
                     </div>
 
                     <div class="footer-col">
-                        <h4>Navigasi</h4>
-                        <ul>
-                            <li><a href="/dashboard" data-nav>Dashboard</a></li>
-                            <li><a href="/spekpc" data-nav>Spek PC</a></li>
-                            <li><a href="/network" data-nav>Network</a></li>
-                            <li><a href="/koneksitoko" data-nav>Koneksi Toko</a></li>
-                            <li><a href="/service" data-nav>Service Barang</a></li>
-                            <li><a href="/part" data-nav>Stok Part</a></li>
-                            <li><a href="/onhand-opr" data-nav>Onhand OPR</a></li>
-                            <li><a href="/integrasitelegram" data-nav>Telegram Bot</a></li>
-                            <li><a href="/data" data-nav>Data All</a></li>
-                            <li><a href="/surat-jalan" data-nav>SJ / SURAT JALAN</a></li>
-                            <li><a href="/tampung" data-nav>Tampung Program</a></li>
-                            <li><a href="/clip" data-nav>Clipboard</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col">
                         <h4>Sistem</h4>
                         <ul>
-                            <li><a href="#">Export Excel</a></li>
-                            <li><a href="#">Export CSV</a></li>
+                            <li><a href="/spekpc/export/excel">Export Excel</a></li>
+                            <li><a href="/spekpc/export/csv">Export CSV</a></li>
                             <li><a href="/logout">Logout</a></li>
                         </ul>
                     </div>
