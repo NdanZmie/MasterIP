@@ -28,6 +28,11 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.p
 // LOGOUT
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// ── AKSES PUBLIK DATA TAMPUNG (TANPA LOGIN) ──
+Route::get('/tpg2',                 [TampungController::class, 'publicList'])->name('tpg2.index');
+Route::get('/tpg2/download/{id}',   [TampungController::class, 'download'])->name('tpg2.download');
+Route::get('/tampung/download/{id}',[TampungController::class, 'download'])->name('tampung.download');
+
 //
 // =======================
 // PROTECTED (WAJIB LOGIN)
@@ -116,7 +121,6 @@ Route::middleware('auth.session')->group(function () {
     // ── TAMPUNG (PENAMPUNG PROGRAM & REPOSITORI APLIKASI) ──
     Route::get('/tampung',               [TampungController::class, 'index'])->name('tampung.index');
     Route::post('/tampung/store',        [TampungController::class, 'store'])->name('tampung.store');
-    Route::get('/tampung/download/{id}', [TampungController::class, 'download'])->name('tampung.download');
     Route::post('/tampung/update/{id}',  [TampungController::class, 'update'])->name('tampung.update');
     Route::post('/tampung/delete/{id}',  [TampungController::class, 'destroy'])->name('tampung.destroy');
 
