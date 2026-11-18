@@ -703,7 +703,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                 </svg>
-                Armada PC
+                PC
                 <span class="badge-pill">{{ $totalPc }}</span>
             </button>
             <button type="button" class="db-tab-btn" onclick="switchDbView('service', this)">
@@ -858,7 +858,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-blue)" stroke-width="2">
                         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                     </svg>
-                    Kesehatan Armada PC
+                    Data All PC
                 </div>
                 <span class="db-panel-badge">{{ $totalPc }} Unit</span>
             </div>

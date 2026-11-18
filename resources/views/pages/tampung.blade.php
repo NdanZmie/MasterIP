@@ -707,6 +707,7 @@
                 </div>
             </div>
 
+            @if(session('user_id'))
             <button type="button" class="btn-upload-program" onclick="openUploadModal()">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <line x1="12" y1="5" x2="12" y2="19"/>
@@ -714,20 +715,23 @@
                 </svg>
                 + Tampung Program Baru
             </button>
+            @endif
         </div>
     </div>
 
-
+    @php
+        $currentRouteName = request()->is('tpg2*') ? 'tpg2.index' : 'tampung.index';
+    @endphp
 
     <!-- TOOLBAR & FILTERS -->
     <div class="tp-toolbar">
         <div class="tp-categories-row">
-            <a href="{{ route('tampung.index', ['search' => $search, 'sort' => $sort]) }}"
+            <a href="{{ route($currentRouteName, ['search' => $search, 'sort' => $sort]) }}"
                class="cat-btn {{ $kategori === 'ALL' || empty($kategori) ? 'active' : '' }}">
                 Semua Program
             </a>
             @foreach($categoriesList as $cat)
-                <a href="{{ route('tampung.index', ['kategori' => $cat, 'search' => $search, 'sort' => $sort]) }}"
+                <a href="{{ route($currentRouteName, ['kategori' => $cat, 'search' => $search, 'sort' => $sort]) }}"
                    class="cat-btn {{ $kategori === $cat ? 'active' : '' }}">
                     {{ $cat }}
                 </a>
@@ -736,7 +740,7 @@
 
         <div class="tp-filter-right">
             <!-- Search Form -->
-            <form action="{{ route('tampung.index') }}" method="GET" class="search-box-wrap">
+            <form action="{{ route($currentRouteName) }}" method="GET" class="search-box-wrap">
                 <input type="hidden" name="kategori" value="{{ $kategori }}">
                 <input type="hidden" name="sort" value="{{ $sort }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -829,6 +833,7 @@
                             </svg>
                         </button>
 
+                        @if(session('user_id'))
                         <!-- Edit Button -->
                         <button type="button" class="btn-card-icon"
                                 title="Edit Detail Program"
@@ -847,6 +852,7 @@
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                             </svg>
                         </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -865,9 +871,11 @@
                         Halaman ini dapat menampung aplikasi, utilitas, installer, atau driver yang ingin dishare ke tim.
                     @endif
                 </p>
+                @if(session('user_id'))
                 <button type="button" class="btn-upload-program" onclick="openUploadModal()">
                     + Unggah Program Pertama
                 </button>
+                @endif
             </div>
         @endforelse
     </div>
@@ -937,6 +945,7 @@
                                             onclick="copyDownloadUrl('{{ route('tampung.download', $prog->id) }}')">
                                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                                     </button>
+                                    @if(session('user_id'))
                                     <button type="button" class="btn-card-icon"
                                             title="Edit"
                                             onclick="openEditModal({{ json_encode($prog) }})">
@@ -947,6 +956,7 @@
                                             onclick="openDeleteModal({{ $prog->id }}, '{{ addslashes($prog->nama_program) }}')">
                                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                     </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

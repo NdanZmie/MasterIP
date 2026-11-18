@@ -89,6 +89,71 @@ class TampungController extends Controller
     }
 
     /**
+     * Tampilan Simple List publik untuk client (/tpg2)
+     */
+    public function publicList(Request $request)
+    {
+        $search = trim($request->input('search', ''));
+        $kategori = trim($request->input('kategori', 'ALL'));
+        $sort = trim($request->input('sort', 'terbaru'));
+
+        $query = TampungProgram::query();
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_program', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%")
+                  ->orWhere('file_name', 'like', "%{$search}%")
+                  ->orWhere('versi', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%")
+                  ->orWhere('file_extension', 'like', "%{$search}%");
+            });
+        }
+
+        if ($kategori !== '' && $kategori !== 'ALL') {
+            $query->where('kategori', $kategori);
+        }
+
+        switch ($sort) {
+            case 'populer':
+                $query->orderBy('download_count', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'ukuran':
+                $query->orderBy('file_size', 'desc');
+                break;
+            case 'nama':
+                $query->orderBy('nama_program', 'asc');
+                break;
+            case 'terbaru':
+            default:
+                $query->orderBy('id', 'desc');
+                break;
+        }
+
+        $categoriesList = [
+            'Aplikasi / Tools',
+            'Driver & Hardware',
+            'Utilitas EDP',
+            'Script & Batch',
+            'Sistem Operasi / ISO',
+            'Dokumen & Panduan',
+            'Lainnya',
+        ];
+
+        $totalPrograms = TampungProgram::count();
+        $programs = $query->paginate(25)->withQueryString();
+
+        return view('pages.tpg2', compact(
+            'programs',
+            'totalPrograms',
+            'categoriesList',
+            'search',
+            'kategori',
+            'sort'
+        ));
+    }
+
+    /**
      * Store a newly uploaded program or link in storage
      */
     public function store(Request $request)

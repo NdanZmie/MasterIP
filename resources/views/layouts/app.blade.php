@@ -879,7 +879,7 @@
     <header id="navbar">
         <div class="nav-inner">
 
-            <a href="/spekpc" class="nav-brand" data-nav>
+            <a href="{{ session('user_id') ? '/dashboard' : '/tpg2' }}" class="nav-brand" data-nav>
                 <div class="brand-icon">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <rect x="2" y="3" width="20" height="14" rx="2"/>
@@ -887,9 +887,10 @@
                     </svg>
                 </div>
                 <span class="brand-text">MasterIP</span>
-                <span class="brand-badge">BETA</span>
+                <span class="brand-badge">{{ session('user_id') ? 'BETA' : 'CLIENT' }}</span>
             </a>
 
+            @if(session('user_id'))
             {{-- Nav Links (Center Container) --}}
             <div class="nav-menu-wrap">
                 <ul class="nav-links">
@@ -955,7 +956,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/tampung" class="{{ request()->is('tampung*') ? 'active' : '' }}" data-nav title="Tampung Program">
+                        <a href="/tampung" class="{{ request()->is('tampung*') || request()->is('tpg2*') ? 'active' : '' }}" data-nav title="Tampung Program">
                             <span class="nav-fill"></span>
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -1000,6 +1001,28 @@
                     <span>Logout</span>
                 </a>
             </div>
+            @else
+            {{-- Nav Links Public Client Mode --}}
+            <div class="nav-menu-wrap" style="justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.25); padding: 7px 18px; border-radius: 30px; font-size: 0.82rem; font-weight: 700; color: #0891b2;">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Data Tampung</span>
+                </div>
+            </div>
+
+            {{-- Action Login Petugas EDP --}}
+            <div class="nav-user-actions">
+                <a href="/login" class="nav-logout" style="border-color: rgba(59,130,246,0.3); color: #2563eb; background: rgba(59,130,246,0.08); padding: 6px 14px; gap: 7px;" title="Login Administrator EDP">
+                    <span class="nav-fill"></span>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                        <polyline points="10 17 15 12 10 7"/>
+                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    <span style="font-weight: 700;">Login EDP</span>
+                </a>
+            </div>
+            @endif
         </div>
     </header>
 
